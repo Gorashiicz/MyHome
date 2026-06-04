@@ -1,0 +1,207 @@
+/**
+ * Vzorový rozpočet importovaný z: Rozpočet položkový (1).xlsx
+ * Vygenerováno: scripts/generate-sample-budget.mjs
+ */
+export const SAMPLE_BUDGET_XLSX = {
+  "sourceFile": "Rozpočet položkový (1).xlsx",
+  "categories": [
+    {
+      "name": "Základy a zemní práce",
+      "estimate": 1000000,
+      "budget": 6500000,
+      "actual": 638000,
+      "note": "FAKTURA na 504tis + doplatek  - základová deska, + sítě+ zemní úpravy na pozemku (štěrl, recyklat atd) + zemina 134000"
+    },
+    {
+      "name": "Svislé konstrukce",
+      "estimate": 800000,
+      "budget": 0,
+      "actual": 1356000,
+      "note": "680000 +77.700        práce - zdění - březen 38.000        materiál zateplení desky (asfalt, lepidlo atd), 207tis-material zdění, 354ttis práce-zdění"
+    },
+    {
+      "name": "Vodorovné konstrukce, stropy",
+      "estimate": 350000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Konstrukce střechy",
+      "estimate": 250000,
+      "budget": 0,
+      "actual": 250000,
+      "note": "konstrukce"
+    },
+    {
+      "name": "Krytina střech",
+      "estimate": 500000,
+      "budget": 0,
+      "actual": 0,
+      "note": "cca 250000"
+    },
+    {
+      "name": "Klempířské konstrukce",
+      "estimate": 150000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Úpravy vnitřních povrchů",
+      "estimate": 250000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Úpravy vnějších povrchů",
+      "estimate": 350000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Vnitřní obklady",
+      "estimate": 150000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Dveře a vrata",
+      "estimate": 300000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Okna",
+      "estimate": 500000,
+      "budget": 0,
+      "actual": 450000,
+      "note": "zaplacená záloha 420tis."
+    },
+    {
+      "name": "Povrch podlah",
+      "estimate": 240000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Vytápění",
+      "estimate": 400000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Elektroinstalace",
+      "estimate": 200000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Bleskosvod",
+      "estimate": 60000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Vnitřní vodovod",
+      "estimate": 100000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Vnitřní kanalizace",
+      "estimate": 80000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Ohřev teplé vody",
+      "estimate": 70000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Kuchyně",
+      "estimate": 500000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Vnitřní hygienická zařízení vč. WC",
+      "estimate": 250000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    },
+    {
+      "name": "Komín",
+      "estimate": 55000,
+      "budget": 0,
+      "actual": 0,
+      "note": ""
+    }
+  ],
+  "lineItems": [
+    {
+      "category": "Klempířské konstrukce",
+      "name": "Okapní háky",
+      "amount": 5000,
+      "note": ""
+    },
+    {
+      "category": "Konstrukce střechy",
+      "name": "KTK",
+      "amount": 2994,
+      "note": "vruty, sroupy materiál"
+    },
+    {
+      "category": "Konstrukce střechy",
+      "name": "KTK",
+      "amount": 27375,
+      "note": "OSB + latě"
+    },
+    {
+      "category": "Konstrukce střechy",
+      "name": "KTK",
+      "amount": 1260,
+      "note": "nářadí"
+    },
+    {
+      "category": "Konstrukce střechy",
+      "name": "KTK",
+      "amount": 3579,
+      "note": "materiál"
+    },
+    {
+      "category": "Konstrukce střechy",
+      "name": "KTK",
+      "amount": 4265,
+      "note": "penetrace"
+    },
+    {
+      "category": "Konstrukce střechy",
+      "name": "Železářství Charouzek",
+      "amount": 200,
+      "note": "šrouby"
+    }
+  ],
+  "totalEstimate": 6555000,
+  "totalActualCategories": 2694000,
+  "totalActualItems": 44673,
+  "projectBudgetLimit": 6500000
+} as const;
+
+export type SampleBudgetCategory = (typeof SAMPLE_BUDGET_XLSX.categories)[number];
+export type SampleBudgetLineItem = (typeof SAMPLE_BUDGET_XLSX.lineItems)[number];

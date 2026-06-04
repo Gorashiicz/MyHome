@@ -1,0 +1,29 @@
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+let client: SupabaseClient | null = null;
+
+export function isCloudStorageEnabled() {
+  return Boolean(
+    process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
+
+export function getStorageBucketName() {
+  return process.env.SUPABASE_STORAGE_BUCKET ?? "stavba-uploads";
+}
+
+export function getSupabaseAdmin() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error(
+      "Supabase není nakonfigurován (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)."
+    );
+  }
+  if (!client) {
+    client = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+  }
+  return client;
+}

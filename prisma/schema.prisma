@@ -1,0 +1,507 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum BudgetMode {
+  limited
+  open
+}
+
+enum ProjectStatus {
+  planning
+  active
+  paused
+  finished
+  archived
+}
+
+enum ProjectRole {
+  owner
+  editor
+  viewer
+}
+
+enum PaymentStatus {
+  planned
+  ordered
+  paid
+  partially_paid
+  cancelled
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  waiting
+  done
+  cancelled
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  critical
+}
+
+enum DefectStatus {
+  open
+  in_progress
+  waiting_for_supplier
+  fixed
+  rejected
+  closed
+}
+
+enum AttachmentType {
+  invoice
+  receipt
+  project_document
+  photo
+  revision
+  contract
+  offer
+  technical_sheet
+  warranty
+  other
+}
+
+enum DocumentType {
+  project
+  permit
+  contract
+  quote
+  invoice
+  revision
+  certificate
+  warranty
+  manual
+  technical_sheet
+  as_built
+  other
+}
+
+enum InviteStatus {
+  pending
+  accepted
+  revoked
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  locale        String    @default("cs-CZ")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  ownedProjects  Project[]       @relation("ProjectOwner")
+  memberships    ProjectMember[]
+  expenses       Expense[]       @relation("ExpenseCreator")
+  attachments    Attachment[]    @relation("AttachmentUploader")
+  documents      Document[]      @relation("DocumentCreator")
+  photos         Photo[]         @relation("PhotoCreator")
+  tasksCreated   Task[]          @relation("TaskCreator")
+  tasksAssigned  Task[]          @relation("TaskAssignee")
+  diaryEntries   DiaryEntry[]    @relation("DiaryCreator")
+  defects        Defect[]        @relation("DefectCreator")
+  comments       Comment[]
+  auditLogs      AuditLog[]
+  invitations    Invitation[]    @relation("InvitationInviter")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  name             String
+  description      String?
+  addressText      String?
+  constructionType String?
+  budgetMode       BudgetMode    @default(limited)
+  budgetLimit      Decimal?      @db.Decimal(14, 2)
+  currency         String        @default("CZK")
+  startDate        DateTime?
+  expectedFinish   DateTime?
+  status           ProjectStatus @default(planning)
+  stages           String[]      @default([])
+  diaryMetadata    Json?
+  ownerId          String
+  archivedAt       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  owner            User             @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members          ProjectMember[]
+  budgetCategories BudgetCategory[]
+  expenses         Expense[]
+  attachments      Attachment[]
+  documents        Document[]
+  photos           Photo[]
+  tasks            Task[]
+  suppliers        Supplier[]
+  diaryEntries     DiaryEntry[]
+  defects          Defect[]
+  comments         Comment[]
+  invitations      Invitation[]
+  auditLogs        AuditLog[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+model ProjectMember {
+  id        String      @id @default(cuid())
+  projectId String
+  userId    String
+  role      ProjectRole @default(viewer)
+  invitedBy String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@index([projectId])
+}
+
+model BudgetCategory {
+  id            String    @id @default(cuid())
+  projectId     String
+  name          String
+  plannedAmount Decimal   @default(0) @db.Decimal(14, 2)
+  note          String?   @db.Text
+  closedAt      DateTime?
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  expenses Expense[]
+
+  @@index([projectId])
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  projectId   String
+  name        String
+  profession  String?
+  companyName String?
+  ico         String?
+  phone       String?
+  email       String?
+  website     String?
+  address     String?
+  notes       String?  @db.Text
+  rating      Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  expenses  Expense[]
+  expenseLinks ExpenseSupplier[]
+  documents Document[]
+  tasks     Task[]
+  defects   Defect[]
+
+  @@index([projectId])
+}
+
+model Expense {
+  id             String        @id @default(cuid())
+  projectId      String
+  categoryId     String?
+  supplierId     String?
+  title          String
+  amount         Decimal       @db.Decimal(14, 2)
+  currency       String        @default("CZK")
+  expenseDate    DateTime
+  dueDate        DateTime?
+  paymentStatus  PaymentStatus @default(planned)
+  stage          String?
+  note           String?       @db.Text
+  tags           String[]      @default([])
+  taskId         String?
+  documentId     String?
+  createdById    String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category    BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  supplier    Supplier?       @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  supplierLinks ExpenseSupplier[]
+  createdBy   User            @relation("ExpenseCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([categoryId])
+  @@index([supplierId])
+}
+
+model ExpenseSupplier {
+  expenseId  String
+  supplierId String
+  sortOrder  Int      @default(0)
+
+  expense  Expense  @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@id([expenseId, supplierId])
+  @@index([supplierId])
+}
+
+model Attachment {
+  id           String         @id @default(cuid())
+  projectId    String
+  originalName String
+  storagePath  String
+  mimeType     String
+  fileSize     Int
+  type         AttachmentType @default(other)
+  entityType   String
+  entityId     String
+  uploadedById String
+  uploadedAt   DateTime       @default(now())
+
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy User    @relation("AttachmentUploader", fields: [uploadedById], references: [id])
+
+  @@index([projectId])
+  @@index([entityType, entityId])
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  projectId   String
+  title       String
+  docType     DocumentType @default(other)
+  version     String?
+  docDate     DateTime?
+  note        String?      @db.Text
+  stage       String?
+  supplierId  String?
+  tags        String[]     @default([])
+  storagePath String?
+  mimeType    String?
+  fileSize    Int?
+  createdById String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  supplier  Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  createdBy User      @relation("DocumentCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([docType])
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  projectId   String
+  title       String?
+  description String?  @db.Text
+  photoDate   DateTime @default(now())
+  stage       String?
+  room        String?
+  tags        String[] @default([])
+  important   Boolean  @default(false)
+  evidence    Boolean  @default(false)
+  storagePath String
+  mimeType    String
+  fileSize    Int
+  expenseId   String?
+  taskId      String?
+  diaryId     String?
+  defectId    String?
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("PhotoCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([photoDate])
+}
+
+model Task {
+  id           String       @id @default(cuid())
+  projectId    String
+  title        String
+  description  String?      @db.Text
+  status       TaskStatus   @default(todo)
+  priority     TaskPriority @default(medium)
+  dueDate      DateTime?
+  assigneeId   String?
+  supplierId   String?
+  stage        String?
+  expenseId    String?
+  documentId   String?
+  defectId     String?
+  createdById  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  project    Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee   User?     @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  supplier   Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  createdBy  User      @relation("TaskCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+model DiaryEntry {
+  id                 String   @id @default(cuid())
+  projectId          String
+  entryDate          DateTime
+  weather            String?
+  siteCondition      String?  @db.Text
+  title              String
+  workPerformed      String?  @db.Text
+  peoplePresent      String?  @db.Text
+  machinesEquipment  String?  @db.Text
+  materialsDelivered String?  @db.Text
+  dustMeasures       String?  @db.Text
+  accessibilityMeasures String? @db.Text
+  problems           String?  @db.Text
+  decisions          String?  @db.Text
+  notes              String?  @db.Text
+  createdById        String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User    @relation("DiaryCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([entryDate])
+}
+
+model Defect {
+  id          String       @id @default(cuid())
+  projectId   String
+  title       String
+  description String?      @db.Text
+  status      DefectStatus @default(open)
+  priority    TaskPriority @default(medium)
+  supplierId  String?
+  dueDate     DateTime?
+  dateFound   DateTime     @default(now())
+  dateFixed   DateTime?
+  location    String?
+  stage       String?
+  notes       String?      @db.Text
+  createdById String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  supplier  Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  createdBy User      @relation("DefectCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  projectId  String
+  entityType String
+  entityId   String
+  authorId   String
+  body       String   @db.Text
+  createdAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@index([projectId])
+  @@index([entityType, entityId])
+}
+
+model Invitation {
+  id        String       @id @default(cuid())
+  projectId String
+  email     String
+  role      ProjectRole  @default(viewer)
+  status    InviteStatus @default(pending)
+  token     String       @unique @default(cuid())
+  invitedBy String
+  expiresAt DateTime
+  createdAt DateTime     @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inviter User    @relation("InvitationInviter", fields: [invitedBy], references: [id])
+
+  @@index([projectId])
+  @@index([email])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  projectId  String
+  actorId    String
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actor   User    @relation(fields: [actorId], references: [id])
+
+  @@index([projectId])
+  @@index([createdAt])
+}
