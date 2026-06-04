@@ -1,14 +1,17 @@
-import NextAuth from "next-auth";
-import { authConfig } from "@/lib/auth.config";
 import { ACTIVE_PROJECT_COOKIE } from "@/lib/constants";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-const publicPaths = ["/prihlaseni", "/registrace", "/api/auth"];
+const publicPaths = ["/prihlaseni", "/registrace", "/api/auth", "/api/health"];
 
-function withActiveProjectCookie(
-  response: NextResponse,
-  projectId: string
-) {
+function hasSessionCookie(request: NextRequest) {
+  return Boolean(
+    request.cookies.get("__Secure-authjs.session-token")?.value ||
+      request.cookies.get("authjs.session-token")?.value
+  );
+}
+
+function withActiveProjectCookie(response: NextResponse, projectId: string) {
   response.cookies.set(ACTIVE_PROJECT_COOKIE, projectId, {
     httpOnly: true,
     sameSite: "lax",
@@ -18,22 +21,20 @@ function withActiveProjectCookie(
   return response;
 }
 
-const { auth } = NextAuth(authConfig);
-
-export default auth((req) => {
-  const { pathname } = req.nextUrl;
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const isPublic = publicPaths.some((p) => pathname.startsWith(p));
-  const isLoggedIn = !!req.auth;
+  const isLoggedIn = hasSessionCookie(request);
   const projectMatch = pathname.match(/^\/p\/([^/]+)/);
 
   if (!isLoggedIn && !isPublic && pathname !== "/") {
-    const url = new URL("/prihlaseni", req.nextUrl.origin);
+    const url = new URL("/prihlaseni", request.nextUrl.origin);
     url.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(url);
   }
 
   if (isLoggedIn && (pathname === "/prihlaseni" || pathname === "/registrace")) {
-    return NextResponse.redirect(new URL("/projekty", req.nextUrl.origin));
+    return NextResponse.redirect(new URL("/projekty", request.nextUrl.origin));
   }
 
   if (isLoggedIn && projectMatch) {
@@ -41,7 +42,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
