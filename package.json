@@ -11,6 +11,7 @@
     "auth:secret": "node scripts/generate-auth-secret.mjs",
     "setup:cloud-db": "node scripts/setup-cloud-db.mjs",
     "setup:supabase-bucket": "node scripts/setup-supabase-bucket.mjs",
+    "verify:demo-user": "node scripts/verify-demo-user.mjs",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

@@ -21,7 +21,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Heslo", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = credentialsSchema.safeParse(credentials);
+        const parsed = credentialsSchema.safeParse({
+          email: String(credentials?.email ?? "").trim().toLowerCase(),
+          password: String(credentials?.password ?? ""),
+        });
         if (!parsed.success) return null;
 
         const user = await prisma.user.findUnique({
@@ -46,7 +49,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   events: {
     async signIn({ user }) {
       if (user.id && user.email) {
-        await acceptPendingInvites(user.id, user.email);
+        try {
+          await acceptPendingInvites(user.id, user.email);
+        } catch (e) {
+          console.error("acceptPendingInvites failed:", e);
+        }
       }
     },
   },

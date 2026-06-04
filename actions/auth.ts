@@ -17,12 +17,25 @@ function isNextRedirect(error: unknown) {
 }
 
 export async function loginWithCredentials(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
+
+  if (!email || !password) {
+    redirect("/prihlaseni?error=invalid");
+  }
+
   try {
-    await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      redirectTo: "/projekty",
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
     });
+
+    if (result?.error) {
+      redirect("/prihlaseni?error=invalid");
+    }
+
+    redirect("/projekty");
   } catch (error) {
     if (isNextRedirect(error)) throw error;
     if (error instanceof AuthError && error.type === "CredentialsSignin") {
