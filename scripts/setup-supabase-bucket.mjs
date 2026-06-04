@@ -28,6 +28,13 @@ const { data: existing, error: listError } =
   await supabase.storage.listBuckets();
 if (listError) {
   console.error("Nepodařilo se načíst buckety:", listError.message);
+  if (listError.message.includes("Invalid Compact JWS") && key.startsWith("sb_")) {
+    console.error(
+      "\nTip: V Supabase Dashboard → Settings → API otevřete záložku\n" +
+        '"Legacy anon, service_role API keys" a použijte service_role (začíná eyJ…).\n' +
+        "Nebo vytvořte bucket ručně: Storage → New bucket → stavba-uploads (private)."
+    );
+  }
   process.exit(1);
 }
 
