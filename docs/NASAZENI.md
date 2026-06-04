@@ -28,19 +28,15 @@ Projekt zatím není na GitHubu. Vytvořte **soukromý** repozitář:
 1. Otevřete https://github.com/new
 2. Název např. `stavba-pod-kontrolou`
 3. **Private** ✓, bez README (projekt už existuje)
-4. V terminálu v kořeni projektu:
+4. V terminálu v kořeni projektu (repozitář: [Gorashiicz/MyHome](https://github.com/Gorashiicz/MyHome)):
 
 ```powershell
 cd "c:\Users\rober\Desktop\MyStavba"
-git init
-git add .
-git commit -m "Připraveno pro nasazení na Vercel"
-git branch -M main
-git remote add origin https://github.com/VASE-USERNAME/stavba-pod-kontrolou.git
+git remote add origin https://github.com/Gorashiicz/MyHome.git
 git push -u origin main
 ```
 
-(Nahraďte `VASE-USERNAME` svým GitHub účtem.)
+(Pokud už je `origin` nastavený, stačí `git push`.)
 
 ---
 
@@ -92,7 +88,7 @@ node scripts/setup-supabase-bucket.mjs
 ## Krok 4 — Vercel (hosting zdarma)
 
 1. Registrace: https://vercel.com (přihlášení přes GitHub)
-2. **Add New → Project** → Import repozitář `stavba-pod-kontrolou`
+2. **Add New → Project** → Import repozitář [Gorashiicz/MyHome](https://github.com/Gorashiicz/MyHome)
 3. Framework: **Next.js** (automaticky)
 4. **Environment Variables** — přidejte všechny:
 
