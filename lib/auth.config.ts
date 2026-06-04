@@ -4,7 +4,7 @@ import type { NextAuthConfig } from "next-auth";
  * Edge-safe Auth.js config (middleware). Bez Prisma/bcrypt — viz lib/auth.ts.
  */
 export const authConfig = {
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   trustHost: true,
   session: { strategy: "jwt" },
   pages: {
