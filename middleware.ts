@@ -1,4 +1,5 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { ACTIVE_PROJECT_COOKIE } from "@/lib/constants";
 import { NextResponse } from "next/server";
 
@@ -16,6 +17,8 @@ function withActiveProjectCookie(
   });
   return response;
 }
+
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;

@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { acceptPendingInvites } from "@/lib/invitations";
+import { authConfig } from "@/lib/auth.config";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -12,13 +13,8 @@ const credentialsSchema = z.object({
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  secret: process.env.AUTH_SECRET,
-  trustHost: true,
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/prihlaseni",
-  },
   providers: [
     Credentials({
       name: "credentials",
@@ -54,20 +50,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user.id && user.email) {
         await acceptPendingInvites(user.id, user.email);
       }
-    },
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id as string;
-      }
-      return session;
     },
   },
 });
