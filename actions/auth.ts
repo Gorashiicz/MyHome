@@ -1,8 +1,37 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { AuthError } from "next-auth";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { signIn } from "@/lib/auth";
 import { registerSchema } from "@/lib/validators";
+
+function isNextRedirect(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "digest" in error &&
+    String((error as { digest: string }).digest).startsWith("NEXT_REDIRECT")
+  );
+}
+
+export async function loginWithCredentials(formData: FormData) {
+  try {
+    await signIn("credentials", {
+      email: formData.get("email"),
+      password: formData.get("password"),
+      redirectTo: "/projekty",
+    });
+  } catch (error) {
+    if (isNextRedirect(error)) throw error;
+    if (error instanceof AuthError && error.type === "CredentialsSignin") {
+      redirect("/prihlaseni?error=invalid");
+    }
+    console.error("Login failed:", error);
+    redirect("/prihlaseni?error=server");
+  }
+}
 
 export async function registerUser(formData: FormData) {
   const raw = {
