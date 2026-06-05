@@ -245,279 +245,223 @@ body {
   background-color: var(--app-surface-muted);
 }
 
-/* ── Celostránková pozadí sekcí (public/decor) ── */
+/* ── Ilustrační hero pruh sekcí (public/decor) ── */
 
-[data-theme="default"] .app-page-backdrop[data-section="home"] {
+[data-theme="default"] .app-section-hero[data-section="home"] {
   --section-banner-image: url("/decor/default/home.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="auth"] {
+[data-theme="default"] .app-section-hero[data-section="auth"] {
   --section-banner-image: url("/decor/default/auth.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="projects"] {
+[data-theme="default"] .app-section-hero[data-section="projects"] {
   --section-banner-image: url("/decor/default/projects.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="dashboard"] {
+[data-theme="default"] .app-section-hero[data-section="dashboard"] {
   --section-banner-image: url("/decor/default/dashboard.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="budget"] {
+[data-theme="default"] .app-section-hero[data-section="budget"] {
   --section-banner-image: url("/decor/default/budget.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="documents"] {
+[data-theme="default"] .app-section-hero[data-section="documents"] {
   --section-banner-image: url("/decor/default/documents.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="tasks"] {
+[data-theme="default"] .app-section-hero[data-section="tasks"] {
   --section-banner-image: url("/decor/default/tasks.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="tools"] {
+[data-theme="default"] .app-section-hero[data-section="tools"] {
   --section-banner-image: url("/decor/default/tools.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="add"] {
+[data-theme="default"] .app-section-hero[data-section="add"] {
   --section-banner-image: url("/decor/default/add.webp");
 }
-[data-theme="default"] .app-page-backdrop[data-section="milestones"] {
+[data-theme="default"] .app-section-hero[data-section="milestones"] {
   --section-banner-image: url("/decor/default/milestones.webp");
 }
 
-[data-theme="stavba"] .app-page-backdrop[data-section="home"] {
+[data-theme="stavba"] .app-section-hero[data-section="home"] {
   --section-banner-image: url("/decor/stavba/home.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="auth"] {
+[data-theme="stavba"] .app-section-hero[data-section="auth"] {
   --section-banner-image: url("/decor/stavba/auth.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="projects"] {
+[data-theme="stavba"] .app-section-hero[data-section="projects"] {
   --section-banner-image: url("/decor/stavba/projects.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="dashboard"] {
+[data-theme="stavba"] .app-section-hero[data-section="dashboard"] {
   --section-banner-image: url("/decor/stavba/dashboard.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="budget"] {
+[data-theme="stavba"] .app-section-hero[data-section="budget"] {
   --section-banner-image: url("/decor/stavba/budget.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="documents"] {
+[data-theme="stavba"] .app-section-hero[data-section="documents"] {
   --section-banner-image: url("/decor/stavba/documents.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="tasks"] {
+[data-theme="stavba"] .app-section-hero[data-section="tasks"] {
   --section-banner-image: url("/decor/stavba/tasks.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="tools"] {
+[data-theme="stavba"] .app-section-hero[data-section="tools"] {
   --section-banner-image: url("/decor/stavba/tools.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="add"] {
+[data-theme="stavba"] .app-section-hero[data-section="add"] {
   --section-banner-image: url("/decor/stavba/add.webp");
 }
-[data-theme="stavba"] .app-page-backdrop[data-section="milestones"] {
+[data-theme="stavba"] .app-section-hero[data-section="milestones"] {
   --section-banner-image: url("/decor/stavba/milestones.webp");
 }
 
-.app-page-backdrop {
-  position: relative;
+.app-section-page {
   margin: -1rem -1rem 0;
-  padding-bottom: 0.5rem;
-  min-height: calc(100dvh - 10.5rem);
-  isolation: isolate;
 }
 
-.app-page-backdrop--inset {
-  margin: 0;
-  min-height: auto;
-  border-radius: var(--app-radius-xl);
+.app-section-page__body {
+  padding: 0 0 0.5rem;
+}
+
+.app-section-hero {
+  position: relative;
   overflow: hidden;
+  border-radius: var(--app-radius-xl);
   border: 1px solid var(--app-border);
+  box-shadow:
+    0 4px 18px rgba(15, 23, 42, 0.07),
+    0 1px 3px rgba(15, 23, 42, 0.04);
+  margin-bottom: 1.25rem;
+  background: var(--app-surface);
 }
 
-.app-page-backdrop::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-color: var(--app-surface-muted);
+/* Celá ilustrace viditelná — stůl vlevo, stavba vpravo */
+.app-section-hero__art {
+  display: block;
+  width: 100%;
+  height: clamp(10rem, 48vw, 17rem);
+  background-color: #b8cede;
   background-image: var(--section-banner-image);
-  background-size: 100% auto;
-  background-position: top center;
+  background-size: contain;
+  background-position: center;
   background-repeat: no-repeat;
 }
 
-@media (min-width: 768px) {
-  .app-page-backdrop::before {
-    background-size: cover;
-    background-position: center center;
-  }
+[data-theme="stavba"] .app-section-hero__art {
+  background-color: #d5c4b4;
 }
 
-.app-page-backdrop__scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--app-bg) 28%, transparent) 0%,
-    color-mix(in srgb, var(--app-bg) 62%, transparent) 32%,
-    color-mix(in srgb, var(--app-bg) 86%, transparent) 58%,
-    color-mix(in srgb, var(--app-bg) 96%, transparent) 100%
-  );
+.app-section-hero__art--landing {
+  height: clamp(11rem, 52vw, 19rem);
 }
 
-[data-theme="stavba"] .app-page-backdrop__scrim {
-  background: linear-gradient(
-    180deg,
-    rgba(243, 235, 224, 0.18) 0%,
-    rgba(243, 235, 224, 0.55) 32%,
-    rgba(243, 235, 224, 0.84) 58%,
-    rgba(243, 235, 224, 0.96) 100%
-  );
-}
-
-.app-page-backdrop__inner {
-  position: relative;
-  z-index: 2;
-}
-
-.app-page-backdrop__header {
+.app-section-hero__bar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.75rem 1rem;
-  padding: 0.25rem 0 1.25rem;
+  gap: 0.65rem 1rem;
+  padding: 0.9rem 1rem 1rem;
+  border-top: 1px solid var(--app-border);
+  background: var(--app-surface);
 }
 
-.app-page-backdrop__title {
-  font-size: 1.375rem;
-  font-weight: 700;
-  line-height: 1.25;
+.app-section-hero__title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
   color: var(--app-fg);
-  text-shadow: 0 1px 16px color-mix(in srgb, var(--app-bg) 85%, transparent);
 }
 
-.app-page-backdrop__description {
-  margin-top: 0.35rem;
-  max-width: 40rem;
-  font-size: 0.875rem;
-  line-height: 1.45;
+.app-section-hero__description {
+  margin-top: 0.25rem;
+  max-width: 36rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
   color: var(--app-muted);
 }
 
-.app-page-backdrop__header-extra {
+.app-section-hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
 }
 
-/* Skleněné karty nad pozadím */
-.app-page-backdrop__body :where(
-  .border-border.bg-surface,
-  .rounded-lg.border.bg-white,
-  .rounded-xl.border.bg-white,
-  .rounded-lg.border.border-slate-200.bg-white
-) {
-  background-color: color-mix(in srgb, var(--app-surface) 93%, transparent) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.app-page-backdrop__body .app-list-link {
-  background-color: color-mix(in srgb, var(--app-surface) 93%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* Hero — landing a přihlášení */
-.app-page-backdrop--hero {
-  margin: 0;
-  min-height: min(52vh, 24rem);
-}
-
-.app-page-backdrop--hero::before {
-  background-size: cover;
-  background-position: center center;
-}
-
-.app-page-backdrop__scrim--hero {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--app-bg) 40%, transparent) 0%,
-    color-mix(in srgb, var(--app-bg) 82%, transparent) 55%,
-    var(--app-bg) 100%
-  ) !important;
-}
-
-[data-theme="stavba"] .app-page-backdrop__scrim--hero {
-  background: linear-gradient(
-    180deg,
-    rgba(243, 235, 224, 0.35) 0%,
-    rgba(243, 235, 224, 0.82) 55%,
-    var(--app-bg) 100%
-  ) !important;
-}
-
-.app-page-backdrop__inner--hero {
-  display: flex;
+.app-section-hero__bar--landing {
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: inherit;
-  padding: 2.5rem 1.5rem 1.5rem;
   text-align: center;
+  padding: 1rem 1.25rem 1.15rem;
 }
 
-.app-page-backdrop__title--hero {
-  font-size: clamp(1.75rem, 5vw, 2.35rem);
-  font-weight: 800;
+.app-section-hero__title--landing {
+  font-size: clamp(1.65rem, 5vw, 2.2rem);
 }
 
-.app-page-backdrop__description--hero {
-  font-size: 1rem;
-  line-height: 1.55;
-  max-width: 32rem;
+.app-section-hero__description--landing {
+  font-size: 0.9375rem;
+  max-width: 28rem;
 }
 
 .app-landing-shell {
   min-height: 100dvh;
 }
 
-.app-landing-shell .app-page-backdrop {
+.app-landing-shell .app-section-page {
   margin: 0;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
-.app-standalone-shell .app-page-backdrop {
+.app-landing-shell .app-section-hero {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  margin-bottom: 0;
+}
+
+.app-landing-shell .app-section-page__body--landing {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem 1.5rem 2rem;
+}
+
+.app-standalone-shell .app-section-page {
   margin: 0;
-  min-height: calc(100dvh - 3rem);
 }
 
 .app-auth-shell {
   margin: 0 auto;
   max-width: 28rem;
   padding: 0 1rem 2rem;
-  min-height: 100dvh;
 }
 
-.app-auth-shell .app-page-backdrop--hero {
-  margin: 0 -1rem 1rem;
-  min-height: min(40vh, 18rem);
-  border-bottom: 1px solid var(--app-border);
+.app-auth-shell .app-section-page {
+  margin: 0 -1rem;
+}
+
+.app-auth-shell .app-section-hero {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
 }
 
 .app-auth-shell > .border-border.bg-surface {
-  background-color: color-mix(in srgb, var(--app-surface) 94%, transparent) !important;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  margin-top: 1rem;
 }
 
 @media (min-width: 768px) {
-  .app-page-backdrop {
+  .app-section-page {
     margin: -1rem -1rem 0;
-    border-radius: 0;
   }
 
-  .app-page-backdrop__title {
+  .app-section-hero__title {
     font-size: 1.5rem;
   }
 
-  .app-auth-shell .app-page-backdrop--hero {
-    margin: 0 0 1.25rem;
+  .app-auth-shell .app-section-page {
+    margin: 0;
+  }
+
+  .app-auth-shell .app-section-hero {
     border-radius: var(--app-radius-xl);
     border: 1px solid var(--app-border);
   }
