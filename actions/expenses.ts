@@ -78,6 +78,7 @@ export async function createExpense(projectId: string, formData: FormData) {
 
   revalidatePath(`/p/${projectId}`);
   revalidatePath(`/p/${projectId}/dodavatele`);
+  revalidatePath(`/p/${projectId}/dokumenty`);
   redirect(`/p/${projectId}/rozpocet/vydaje`);
 }
 

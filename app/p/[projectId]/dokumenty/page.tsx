@@ -1,9 +1,10 @@
 import { listDocuments } from "@/actions/documents";
 import { createDocument, deleteDocument } from "@/actions/documents";
-import { DocumentList } from "@/components/documents/document-list";
+import { FileLibrary } from "@/components/documents/file-library";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
 import { DOCUMENT_TYPE_OPTIONS } from "@/lib/document-types";
+import { listProjectExpenseAttachments } from "@/lib/expense-attachments";
 import { SaveButton } from "@/components/ui/save-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,10 @@ export default async function DocumentsPage({
   await resolveProjectRoute(projectId);
   const user = await requireUser();
   const access = await getProjectAccess(projectId, user.id);
-  const documents = await listDocuments(projectId);
+  const [documents, invoiceAttachments] = await Promise.all([
+    listDocuments(projectId),
+    listProjectExpenseAttachments(projectId),
+  ]);
 
   const documentItems = documents.map((d) => ({
     id: d.id,
@@ -37,73 +41,96 @@ export default async function DocumentsPage({
     createdAt: d.createdAt.toISOString(),
   }));
 
+  const invoiceItems = invoiceAttachments.map((a) => ({
+    id: a.id,
+    originalName: a.originalName,
+    storagePath: a.storagePath,
+    mimeType: a.mimeType,
+    fileSize: a.fileSize,
+    type: a.type,
+    uploadedAt: a.uploadedAt.toISOString(),
+    uploadedByName: a.uploadedBy.name ?? a.uploadedBy.email,
+    expense: a.expense
+      ? {
+          id: a.expense.id,
+          title: a.expense.title,
+          expenseDate: a.expense.expenseDate.toISOString(),
+          amount: Number(a.expense.amount.toString()),
+        }
+      : null,
+  }));
+
   return (
     <SectionPage
       section="documents"
       title="Dokumenty"
-      description="Smlouvy, povolení, revize a další dokumentace stavby"
+      description="Veškeré soubory stavby — dokumentace i faktury z výdajů"
       bodyClassName="space-y-6"
     >
-      <Card>
-        {access?.canEdit && (
-          <>
-            <CardHeader>
-              <CardTitle className="text-base">Nahrát dokument</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form
-                action={createDocument.bind(null, projectId)}
-                className="space-y-3"
-              >
-                <div>
-                  <Label htmlFor="title">Název *</Label>
-                  <Input id="title" name="title" required className="mt-1" />
-                </div>
-                <div>
-                  <Label htmlFor="docType">Typ</Label>
-                  <Select
-                    id="docType"
-                    name="docType"
-                    defaultValue="other"
-                    className="mt-1"
-                  >
-                    {DOCUMENT_TYPE_OPTIONS.map(({ value, label }) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="file">Soubor</Label>
-                  <Input
-                    id="file"
-                    name="file"
-                    type="file"
-                    accept="image/*,application/pdf"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="stage">Etapa</Label>
-                  <Input id="stage" name="stage" className="mt-1" />
-                </div>
-                <div>
-                  <Label htmlFor="note">Poznámka</Label>
-                  <Textarea id="note" name="note" rows={2} className="mt-1" />
-                </div>
-                <SaveButton className="w-full" />
-              </form>
-            </CardContent>
-          </>
-        )}
+      {access?.canEdit && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Nahrát dokument</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form
+              action={createDocument.bind(null, projectId)}
+              className="space-y-3"
+            >
+              <div>
+                <Label htmlFor="title">Název *</Label>
+                <Input id="title" name="title" required className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="docType">Typ</Label>
+                <Select
+                  id="docType"
+                  name="docType"
+                  defaultValue="other"
+                  className="mt-1"
+                >
+                  {DOCUMENT_TYPE_OPTIONS.map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="file">Soubor</Label>
+                <Input
+                  id="file"
+                  name="file"
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="stage">Etapa</Label>
+                <Input id="stage" name="stage" className="mt-1" />
+              </div>
+              <div>
+                <Label htmlFor="note">Poznámka</Label>
+                <Textarea id="note" name="note" rows={2} className="mt-1" />
+              </div>
+              <SaveButton className="w-full" />
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
-        <CardContent className={access?.canEdit ? "border-t border-border pt-6" : "pt-6"}>
-          <DocumentList
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Knihovna souborů</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FileLibrary
             documents={documentItems}
+            invoices={invoiceItems}
             projectId={projectId}
             canEdit={!!access?.canEdit}
-            deleteAction={deleteDocument}
+            deleteDocumentAction={deleteDocument}
           />
         </CardContent>
       </Card>

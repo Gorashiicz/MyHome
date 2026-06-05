@@ -37,11 +37,13 @@ export function DocumentList({
   projectId,
   canEdit,
   deleteAction,
+  hideHeader = false,
 }: {
   documents: DocumentListItem[];
   projectId: string;
   canEdit: boolean;
   deleteAction: (projectId: string, id: string) => Promise<void>;
+  hideHeader?: boolean;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -56,9 +58,11 @@ export function DocumentList({
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium text-muted">
-        Nahrané dokumenty ({documents.length})
-      </p>
+      {!hideHeader && (
+        <p className="text-sm font-medium text-muted">
+          Nahrané dokumenty ({documents.length})
+        </p>
+      )}
       <ul className="space-y-2">
         {documents.map((doc) => {
           const expanded = expandedId === doc.id;

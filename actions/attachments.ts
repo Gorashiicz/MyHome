@@ -65,4 +65,5 @@ function revalidateExpensePaths(projectId: string, expenseId: string) {
   revalidatePath(`/p/${projectId}/rozpocet/vydaje/${expenseId}`);
   revalidatePath(`/p/${projectId}/rozpocet/vydaje/${expenseId}/upravit`);
   revalidatePath(`/p/${projectId}/rozpocet/vydaje`);
+  revalidatePath(`/p/${projectId}/dokumenty`);
 }
