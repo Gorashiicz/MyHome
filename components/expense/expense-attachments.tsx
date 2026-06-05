@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   addExpenseAttachment,
@@ -9,9 +9,7 @@ import {
 import type { ExpenseAttachmentItem } from "@/lib/expense-attachments";
 import { fileDownloadUrl } from "@/lib/file-urls";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { SaveButton } from "@/components/ui/save-button";
+import { FileUploadButton } from "@/components/ui/file-upload-button";
 import { DeleteAttachmentButton } from "@/components/expense/delete-attachment-button";
 import { ExternalLink, FileText } from "lucide-react";
 
@@ -55,6 +53,7 @@ export function ExpenseAttachments({
   canEdit: boolean;
 }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [uploadState, uploadAction, uploadPending] = useActionState(
     uploadAttachment.bind(null, projectId, expenseId),
     {}
@@ -134,25 +133,17 @@ export function ExpenseAttachments({
 
       {canEdit && (
         <form
+          ref={formRef}
           action={uploadAction}
           encType="multipart/form-data"
-          className="space-y-2 rounded-lg border border-dashed border-border bg-surface-muted/40 p-3"
+          className="rounded-lg border border-dashed border-border bg-surface-muted/40 p-3"
         >
-          <Label htmlFor={`attachment-${expenseId}`}>Přidat fakturu / účtenku</Label>
-          <Input
-            id={`attachment-${expenseId}`}
+          <FileUploadButton
             name="attachment"
-            type="file"
             accept="image/*,application/pdf"
-            required
-          />
-          <p className="text-xs text-muted">
-            Vyberte soubor a potvrďte tlačítkem níže — samo se neuloží.
-          </p>
-          <SaveButton
-            label={uploadPending ? "Nahrávám…" : "Nahrát a uložit soubor"}
-            className="w-full"
+            label={uploadPending ? "Nahrávám…" : "Vložit a uložit soubor"}
             disabled={uploadPending}
+            onFileSelected={() => formRef.current?.requestSubmit()}
           />
         </form>
       )}
