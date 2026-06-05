@@ -9,7 +9,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const BANNER_WIDTH = 1500;
-const BANNER_HEIGHT = 500;
+const BANNER_HEIGHT = 375;
 
 const SOURCES = {
   plan: "pictures/Plan.png",

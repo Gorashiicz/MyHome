@@ -320,9 +320,6 @@ body {
 .app-section-hero {
   position: relative;
   overflow: hidden;
-  width: 75%;
-  margin-left: auto;
-  margin-right: auto;
   border-radius: var(--app-radius-xl);
   border: 1px solid var(--app-border);
   box-shadow:
@@ -332,11 +329,11 @@ body {
   background: var(--app-surface);
 }
 
-/* Banner 3:1 — široké ilustrace bez modrých okrajů */
+/* Plná šířka, nižší pruh (~25 %), obrázek vyplní plochu (cover) */
 .app-section-hero__art {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 1;
+  aspect-ratio: 4 / 1;
   background-color: var(--app-muted);
   background-image: var(--section-banner-image);
   background-size: cover;
@@ -345,7 +342,7 @@ body {
 }
 
 .app-section-hero__art--landing {
-  aspect-ratio: 3 / 1;
+  aspect-ratio: 4 / 1;
 }
 
 .app-section-hero__bar {
@@ -438,7 +435,6 @@ body {
 }
 
 .app-auth-shell .app-section-hero {
-  width: 100%;
   border-radius: 0;
   border-left: none;
   border-right: none;
