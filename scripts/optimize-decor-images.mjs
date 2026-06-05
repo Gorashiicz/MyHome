@@ -1,5 +1,6 @@
 /**
  * Generuje bannery 3:1 z obrázků ve složce pictures/.
+ * Soubory pojmenujte podle sekce: Plan, rozpocet, dokumenty, pridat, vice.
  * Spuštění: npm run decor:build
  */
 import sharp from "sharp";
@@ -10,33 +11,32 @@ const ROOT = process.cwd();
 const BANNER_WIDTH = 1500;
 const BANNER_HEIGHT = 500;
 
-/** Široké bannery ve formátu 3:1 (vložte do pictures/). */
-const BANNERS = [
-  "pictures/ChatGPT Image 5. 6. 2026 12_02_26 (1).png",
-  "pictures/ChatGPT Image 5. 6. 2026 12_02_26 (2).png",
-  "pictures/ChatGPT Image 5. 6. 2026 12_02_26 (3).png",
-  "pictures/ChatGPT Image 5. 6. 2026 12_02_27 (4).png",
-  "pictures/ChatGPT Image 5. 6. 2026 12_02_28 (5).png",
-];
+const SOURCES = {
+  plan: "pictures/Plan.png",
+  rozpocet: "pictures/rozpocet.png",
+  dokumenty: "pictures/dokumenty.png",
+  pridat: "pictures/pridat.png",
+  vice: "pictures/vice.png",
+};
 
-/** Sekce → index banneru (0–4). */
-const SECTION_BANNER_INDEX = {
-  home: 0,
-  projects: 0,
-  dashboard: 1,
-  auth: 1,
-  budget: 2,
-  add: 2,
-  documents: 3,
-  tools: 3,
-  tasks: 4,
-  milestones: 4,
+/** Sekce aplikace → zdrojový banner v pictures/. */
+const SECTION_SOURCES = {
+  home: "plan",
+  auth: "plan",
+  projects: "plan",
+  dashboard: "plan",
+  budget: "rozpocet",
+  documents: "dokumenty",
+  add: "pridat",
+  tasks: "vice",
+  tools: "vice",
+  milestones: "vice",
 };
 
 const THEMES = ["stavba", "default"];
 
-async function writeBanner(src, output) {
-  const input = path.join(ROOT, src);
+async function writeBanner(srcKey, output) {
+  const input = path.join(ROOT, SOURCES[srcKey]);
   const outPath = path.join(ROOT, output);
   const meta = await sharp(input).metadata();
   await sharp(input)
@@ -48,7 +48,7 @@ async function writeBanner(src, output) {
     .toFile(outPath);
   const outMeta = await sharp(outPath).metadata();
   console.log(
-    `OK ${output} ${meta.width}x${meta.height} → ${outMeta.width}x${outMeta.height}`
+    `OK ${output} ← ${SOURCES[srcKey]} (${meta.width}x${meta.height} → ${outMeta.width}x${outMeta.height})`
   );
 }
 
@@ -58,10 +58,9 @@ async function main() {
   }
 
   for (const theme of THEMES) {
-    for (const [section, bannerIndex] of Object.entries(SECTION_BANNER_INDEX)) {
-      const src = BANNERS[bannerIndex];
+    for (const [section, srcKey] of Object.entries(SECTION_SOURCES)) {
       const out = `public/decor/${theme}/${section}.webp`;
-      await writeBanner(src, out);
+      await writeBanner(srcKey, out);
     }
   }
 }
