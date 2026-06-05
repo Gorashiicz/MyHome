@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 const META_FIELDS: { name: keyof ReturnType<typeof diaryMetadataToFormDefaults>; label: string; rows?: number }[] = [
   { name: "permitName", label: "Název stavby dle povolení" },
@@ -71,15 +71,18 @@ export default async function DiaryPage({
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <div className="space-y-4">
-      <SectionBanner section="documents" title="Stavební deník">
-        <Button asChild variant="outline" size="sm" className="mt-2">
+    <SectionPage
+      section="documents"
+      title="Stavební deník"
+      bodyClassName="space-y-4"
+      headerExtra={
+        <Button asChild variant="outline" size="sm">
           <a href={`/api/export/denik?projectId=${projectId}`}>
             Stáhnout PDF (výpis)
           </a>
         </Button>
-      </SectionBanner>
-
+      }
+    >
       <p className="rounded-lg bg-slate-100 p-3 text-sm text-slate-700">
         {DIARY_DISCLAIMER}
       </p>
@@ -269,6 +272,6 @@ export default async function DiaryPage({
           ))}
         </ul>
       </section>
-    </div>
+    </SectionPage>
   );
 }

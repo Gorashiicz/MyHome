@@ -245,228 +245,279 @@ body {
   background-color: var(--app-surface-muted);
 }
 
-/* ── Dekorativní bannery sekcí (public/decor) ── */
+/* ── Celostránková pozadí sekcí (public/decor) ── */
 
-[data-theme="default"] .app-section-banner--home,
-[data-theme="default"] .app-page-hero[data-section="home"] {
+[data-theme="default"] .app-page-backdrop[data-section="home"] {
   --section-banner-image: url("/decor/default/home.webp");
 }
-[data-theme="default"] .app-section-banner--auth,
-[data-theme="default"] .app-page-hero[data-section="auth"] {
+[data-theme="default"] .app-page-backdrop[data-section="auth"] {
   --section-banner-image: url("/decor/default/auth.webp");
 }
-[data-theme="default"] .app-section-banner--projects,
-[data-theme="default"] .app-page-hero[data-section="projects"] {
+[data-theme="default"] .app-page-backdrop[data-section="projects"] {
   --section-banner-image: url("/decor/default/projects.webp");
 }
-[data-theme="default"] .app-section-banner--dashboard {
+[data-theme="default"] .app-page-backdrop[data-section="dashboard"] {
   --section-banner-image: url("/decor/default/dashboard.webp");
 }
-[data-theme="default"] .app-section-banner--budget {
+[data-theme="default"] .app-page-backdrop[data-section="budget"] {
   --section-banner-image: url("/decor/default/budget.webp");
 }
-[data-theme="default"] .app-section-banner--documents {
+[data-theme="default"] .app-page-backdrop[data-section="documents"] {
   --section-banner-image: url("/decor/default/documents.webp");
 }
-[data-theme="default"] .app-section-banner--tasks {
+[data-theme="default"] .app-page-backdrop[data-section="tasks"] {
   --section-banner-image: url("/decor/default/tasks.webp");
 }
-[data-theme="default"] .app-section-banner--tools {
+[data-theme="default"] .app-page-backdrop[data-section="tools"] {
   --section-banner-image: url("/decor/default/tools.webp");
 }
-[data-theme="default"] .app-section-banner--add {
+[data-theme="default"] .app-page-backdrop[data-section="add"] {
   --section-banner-image: url("/decor/default/add.webp");
 }
-[data-theme="default"] .app-section-banner--milestones {
+[data-theme="default"] .app-page-backdrop[data-section="milestones"] {
   --section-banner-image: url("/decor/default/milestones.webp");
 }
 
-[data-theme="stavba"] .app-section-banner--home,
-[data-theme="stavba"] .app-page-hero[data-section="home"] {
+[data-theme="stavba"] .app-page-backdrop[data-section="home"] {
   --section-banner-image: url("/decor/stavba/home.webp");
 }
-[data-theme="stavba"] .app-section-banner--auth,
-[data-theme="stavba"] .app-page-hero[data-section="auth"] {
+[data-theme="stavba"] .app-page-backdrop[data-section="auth"] {
   --section-banner-image: url("/decor/stavba/auth.webp");
 }
-[data-theme="stavba"] .app-section-banner--projects,
-[data-theme="stavba"] .app-page-hero[data-section="projects"] {
+[data-theme="stavba"] .app-page-backdrop[data-section="projects"] {
   --section-banner-image: url("/decor/stavba/projects.webp");
 }
-[data-theme="stavba"] .app-section-banner--dashboard {
+[data-theme="stavba"] .app-page-backdrop[data-section="dashboard"] {
   --section-banner-image: url("/decor/stavba/dashboard.webp");
 }
-[data-theme="stavba"] .app-section-banner--budget {
+[data-theme="stavba"] .app-page-backdrop[data-section="budget"] {
   --section-banner-image: url("/decor/stavba/budget.webp");
 }
-[data-theme="stavba"] .app-section-banner--documents {
+[data-theme="stavba"] .app-page-backdrop[data-section="documents"] {
   --section-banner-image: url("/decor/stavba/documents.webp");
 }
-[data-theme="stavba"] .app-section-banner--tasks {
+[data-theme="stavba"] .app-page-backdrop[data-section="tasks"] {
   --section-banner-image: url("/decor/stavba/tasks.webp");
 }
-[data-theme="stavba"] .app-section-banner--tools {
+[data-theme="stavba"] .app-page-backdrop[data-section="tools"] {
   --section-banner-image: url("/decor/stavba/tools.webp");
 }
-[data-theme="stavba"] .app-section-banner--add {
+[data-theme="stavba"] .app-page-backdrop[data-section="add"] {
   --section-banner-image: url("/decor/stavba/add.webp");
 }
-[data-theme="stavba"] .app-section-banner--milestones {
+[data-theme="stavba"] .app-page-backdrop[data-section="milestones"] {
   --section-banner-image: url("/decor/stavba/milestones.webp");
 }
 
-.app-section-banner {
+.app-page-backdrop {
   position: relative;
+  margin: -1rem -1rem 0;
+  padding-bottom: 0.5rem;
+  min-height: calc(100dvh - 10.5rem);
+  isolation: isolate;
+}
+
+.app-page-backdrop--inset {
+  margin: 0;
+  min-height: auto;
+  border-radius: var(--app-radius-xl);
   overflow: hidden;
-  margin: -1rem -1rem 1.25rem;
-  min-height: 7.5rem;
-  border-bottom: 1px solid var(--app-border);
+  border: 1px solid var(--app-border);
+}
+
+.app-page-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   background-color: var(--app-surface-muted);
   background-image: var(--section-banner-image);
-  background-size: cover;
-  background-position: right center;
+  background-size: 100% auto;
+  background-position: top center;
   background-repeat: no-repeat;
 }
 
-.app-section-banner--compact {
-  min-height: 6rem;
+@media (min-width: 768px) {
+  .app-page-backdrop::before {
+    background-size: cover;
+    background-position: center center;
+  }
 }
 
-.app-section-banner--inset {
-  margin: 0 0 1.25rem;
-  border: 1px solid var(--app-border);
-  border-radius: var(--app-radius-xl);
-}
-
-.app-section-banner__overlay {
+.app-page-backdrop__scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    105deg,
-    color-mix(in srgb, var(--app-surface) 96%, transparent) 0%,
-    color-mix(in srgb, var(--app-surface) 88%, transparent) 42%,
-    color-mix(in srgb, var(--app-surface) 62%, transparent) 100%
-  );
-}
-
-[data-theme="stavba"] .app-section-banner__overlay {
-  background: linear-gradient(
-    105deg,
-    rgba(255, 253, 249, 0.96) 0%,
-    rgba(255, 253, 249, 0.88) 45%,
-    rgba(255, 253, 249, 0.58) 100%
-  );
-}
-
-.app-section-banner__content {
-  position: relative;
   z-index: 1;
-  padding: 1.25rem 1rem 1.35rem;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--app-bg) 28%, transparent) 0%,
+    color-mix(in srgb, var(--app-bg) 62%, transparent) 32%,
+    color-mix(in srgb, var(--app-bg) 86%, transparent) 58%,
+    color-mix(in srgb, var(--app-bg) 96%, transparent) 100%
+  );
 }
 
-.app-section-banner__title {
-  font-size: 1.25rem;
+[data-theme="stavba"] .app-page-backdrop__scrim {
+  background: linear-gradient(
+    180deg,
+    rgba(243, 235, 224, 0.18) 0%,
+    rgba(243, 235, 224, 0.55) 32%,
+    rgba(243, 235, 224, 0.84) 58%,
+    rgba(243, 235, 224, 0.96) 100%
+  );
+}
+
+.app-page-backdrop__inner {
+  position: relative;
+  z-index: 2;
+}
+
+.app-page-backdrop__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.25rem 0 1.25rem;
+}
+
+.app-page-backdrop__title {
+  font-size: 1.375rem;
   font-weight: 700;
   line-height: 1.25;
   color: var(--app-fg);
-  text-shadow: 0 1px 12px color-mix(in srgb, var(--app-surface) 80%, transparent);
+  text-shadow: 0 1px 16px color-mix(in srgb, var(--app-bg) 85%, transparent);
 }
 
-.app-section-banner__description {
+.app-page-backdrop__description {
   margin-top: 0.35rem;
-  max-width: 36rem;
+  max-width: 40rem;
   font-size: 0.875rem;
   line-height: 1.45;
   color: var(--app-muted);
 }
 
-@media (min-width: 768px) {
-  .app-section-banner {
-    margin: -1rem -1rem 1.5rem;
-    border-radius: var(--app-radius-xl);
-    border: 1px solid var(--app-border);
-    min-height: 8.5rem;
-  }
-
-  .app-section-banner__content {
-    padding: 1.5rem 1.25rem 1.6rem;
-  }
-
-  .app-section-banner__title {
-    font-size: 1.375rem;
-  }
+.app-page-backdrop__header-extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-/* Celostránkový hero (úvod, přihlášení) */
-.app-page-hero {
-  position: relative;
-  overflow: hidden;
-  min-height: min(42vh, 22rem);
-  background-color: var(--app-surface-muted);
-  background-image: var(--section-banner-image);
+/* Skleněné karty nad pozadím */
+.app-page-backdrop__body :where(
+  .border-border.bg-surface,
+  .rounded-lg.border.bg-white,
+  .rounded-xl.border.bg-white,
+  .rounded-lg.border.border-slate-200.bg-white
+) {
+  background-color: color-mix(in srgb, var(--app-surface) 93%, transparent) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.app-page-backdrop__body .app-list-link {
+  background-color: color-mix(in srgb, var(--app-surface) 93%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Hero — landing a přihlášení */
+.app-page-backdrop--hero {
+  margin: 0;
+  min-height: min(52vh, 24rem);
+}
+
+.app-page-backdrop--hero::before {
   background-size: cover;
-  background-position: right center;
-  background-repeat: no-repeat;
+  background-position: center center;
 }
 
-.app-page-hero__overlay {
-  position: absolute;
-  inset: 0;
+.app-page-backdrop__scrim--hero {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--app-bg) 88%, transparent) 0%,
-    color-mix(in srgb, var(--app-bg) 94%, transparent) 55%,
+    color-mix(in srgb, var(--app-bg) 40%, transparent) 0%,
+    color-mix(in srgb, var(--app-bg) 82%, transparent) 55%,
     var(--app-bg) 100%
-  );
+  ) !important;
 }
 
-[data-theme="stavba"] .app-page-hero__overlay {
+[data-theme="stavba"] .app-page-backdrop__scrim--hero {
   background: linear-gradient(
     180deg,
-    rgba(243, 235, 224, 0.82) 0%,
-    rgba(243, 235, 224, 0.94) 50%,
+    rgba(243, 235, 224, 0.35) 0%,
+    rgba(243, 235, 224, 0.82) 55%,
     var(--app-bg) 100%
-  );
+  ) !important;
 }
 
-.app-page-hero__content {
-  position: relative;
-  z-index: 1;
-  margin: 0 auto;
-  max-width: 32rem;
+.app-page-backdrop__inner--hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: inherit;
   padding: 2.5rem 1.5rem 1.5rem;
   text-align: center;
 }
 
-.app-page-hero__title {
-  font-size: clamp(1.75rem, 5vw, 2.25rem);
+.app-page-backdrop__title--hero {
+  font-size: clamp(1.75rem, 5vw, 2.35rem);
   font-weight: 800;
-  line-height: 1.15;
-  color: var(--app-fg);
 }
 
-.app-page-hero__description {
-  margin-top: 0.75rem;
+.app-page-backdrop__description--hero {
   font-size: 1rem;
   line-height: 1.55;
-  color: var(--app-muted);
+  max-width: 32rem;
+}
+
+.app-landing-shell {
+  min-height: 100dvh;
+}
+
+.app-landing-shell .app-page-backdrop {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+.app-standalone-shell .app-page-backdrop {
+  margin: 0;
+  min-height: calc(100dvh - 3rem);
 }
 
 .app-auth-shell {
   margin: 0 auto;
   max-width: 28rem;
   padding: 0 1rem 2rem;
+  min-height: 100dvh;
 }
 
-.app-auth-shell .app-page-hero {
-  margin: 0 -1rem 1.25rem;
-  min-height: min(34vh, 16rem);
+.app-auth-shell .app-page-backdrop--hero {
+  margin: 0 -1rem 1rem;
+  min-height: min(40vh, 18rem);
   border-bottom: 1px solid var(--app-border);
 }
 
+.app-auth-shell > .border-border.bg-surface {
+  background-color: color-mix(in srgb, var(--app-surface) 94%, transparent) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
 @media (min-width: 768px) {
-  .app-auth-shell .app-page-hero {
-    margin: 0 0 1.5rem;
+  .app-page-backdrop {
+    margin: -1rem -1rem 0;
+    border-radius: 0;
+  }
+
+  .app-page-backdrop__title {
+    font-size: 1.5rem;
+  }
+
+  .app-auth-shell .app-page-backdrop--hero {
+    margin: 0 0 1.25rem;
     border-radius: var(--app-radius-xl);
     border: 1px solid var(--app-border);
   }

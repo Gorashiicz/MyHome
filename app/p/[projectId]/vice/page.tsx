@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { ThemeSettingsCard } from "@/components/theme/theme-settings-card";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 import {
   Camera,
   CheckSquare,
@@ -36,13 +36,12 @@ export default async function MorePage({
   const base = `/p/${projectId}`;
 
   return (
-    <div className="space-y-6">
-      <SectionBanner
-        section="tools"
-        title="Více"
-        description="Fotky, deník, dodavatelé, checklisty a další nástroje"
-      />
-
+    <SectionPage
+      section="tools"
+      title="Více"
+      description="Fotky, deník, dodavatelé, checklisty a další nástroje"
+      bodyClassName="space-y-6"
+    >
       <ThemeSettingsCard />
 
       <section>
@@ -50,19 +49,19 @@ export default async function MorePage({
           Nástroje
         </h2>
         <ul className="space-y-2">
-        {links.map(({ href, label, icon: Icon }) => (
-          <li key={href}>
-            <Link
-              href={`${base}/${href}`}
-              className="app-list-link flex items-center gap-3 p-4"
-            >
-              <Icon className="app-list-link-icon h-5 w-5" />
-              <span className="font-medium">{label}</span>
-            </Link>
-          </li>
-        ))}
+          {links.map(({ href, label, icon: Icon }) => (
+            <li key={href}>
+              <Link
+                href={`${base}/${href}`}
+                className="app-list-link flex items-center gap-3 p-4"
+              >
+                <Icon className="app-list-link-icon h-5 w-5" />
+                <span className="font-medium">{label}</span>
+              </Link>
+            </li>
+          ))}
         </ul>
       </section>
-    </div>
+    </SectionPage>
   );
 }

@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 export default async function SettingsPage({
   params,
@@ -33,16 +33,15 @@ export default async function SettingsPage({
   });
 
   return (
-    <div className="space-y-6">
+    <SectionPage
+      section="tools"
+      title="Nastavení stavby"
+      description="Název projektu, limit rozpočtu a archivace"
+      bodyClassName="space-y-6"
+    >
       <Link href={`/p/${projectId}/vice`} className="text-sm text-emerald-700">
         ← Zpět
       </Link>
-      <SectionBanner
-        section="tools"
-        title="Nastavení stavby"
-        description="Název projektu, limit rozpočtu a archivace"
-        compact
-      />
 
       <Card>
         <CardContent className="pt-4">
@@ -107,6 +106,6 @@ export default async function SettingsPage({
           Archivovat projekt
         </Button>
       </form>
-    </div>
+    </SectionPage>
   );
 }

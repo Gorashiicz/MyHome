@@ -47,7 +47,7 @@ export function getSectionBackgroundPath(
   return `/decor/${theme}/${SECTION_FILES[theme][section]}`;
 }
 
-/** CSS třída pro banner — pozadí řeší globals.css podle data-theme a data-section. */
-export function sectionBannerClass(section: SectionBackgroundKey) {
-  return `app-section-banner app-section-banner--${section}`;
+/** CSS třída — pozadí se vybírá podle atributu data-section na .app-page-backdrop. */
+export function sectionBannerClass(_section: SectionBackgroundKey) {
+  return "";
 }

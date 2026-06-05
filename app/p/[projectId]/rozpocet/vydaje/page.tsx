@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { PaymentStatus } from "@prisma/client";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 export default async function ExpensesListPage({
   params,
@@ -41,13 +41,16 @@ export default async function ExpensesListPage({
   ]);
 
   return (
-    <div className="space-y-4">
-      <SectionBanner section="budget" title="Výdaje">
-        <Button asChild size="sm" className="mt-2">
+    <SectionPage
+      section="budget"
+      title="Výdaje"
+      bodyClassName="space-y-4"
+      headerExtra={
+        <Button asChild size="sm">
           <Link href={`/p/${projectId}/pridat/vydaj`}>+ Výdaj</Link>
         </Button>
-      </SectionBanner>
-
+      }
+    >
       <form method="get" className="grid gap-2 rounded-lg border bg-white p-3 sm:grid-cols-2">
         <Input name="q" placeholder="Hledat…" defaultValue={sp.q} />
         <Select name="categoryId" defaultValue={sp.categoryId ?? ""}>
@@ -111,6 +114,6 @@ export default async function ExpensesListPage({
           );
         })}
       </ul>
-    </div>
+    </SectionPage>
   );
 }

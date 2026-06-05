@@ -1,46 +1,66 @@
 import type { SectionBackgroundKey } from "@/lib/section-backgrounds";
-import { sectionBannerClass } from "@/lib/section-backgrounds";
 import { cn } from "@/lib/utils";
 
-type SectionBannerProps = {
+type SectionPageProps = {
   section: SectionBackgroundKey;
   title: string;
   description?: string;
   className?: string;
-  compact?: boolean;
-  children?: React.ReactNode;
+  bodyClassName?: string;
+  inset?: boolean;
+  headerExtra?: React.ReactNode;
+  children: React.ReactNode;
 };
 
-export function SectionBanner({
+/** Stránka s celoplošným tematickým pozadím a skleněnými kartami. */
+export function SectionPage({
   section,
   title,
   description,
   className,
-  compact = false,
+  bodyClassName,
+  inset = false,
+  headerExtra,
   children,
-}: SectionBannerProps) {
+}: SectionPageProps) {
   return (
-    <header
+    <div
       className={cn(
-        sectionBannerClass(section),
-        compact && "app-section-banner--compact",
+        "app-page-backdrop",
+        inset && "app-page-backdrop--inset",
         className
       )}
       data-section={section}
     >
-      <div className="app-section-banner__overlay" aria-hidden />
-      <div className="app-section-banner__content">
-        <h1 className="app-section-banner__title">{title}</h1>
-        {description && (
-          <p className="app-section-banner__description">{description}</p>
-        )}
-        {children}
+      <div className="app-page-backdrop__scrim" aria-hidden />
+      <div className="app-page-backdrop__inner">
+        <header className="app-page-backdrop__header">
+          <div className="min-w-0 flex-1">
+            <h1 className="app-page-backdrop__title">{title}</h1>
+            {description && (
+              <p className="app-page-backdrop__description">{description}</p>
+            )}
+          </div>
+          {headerExtra && (
+            <div className="app-page-backdrop__header-extra shrink-0">
+              {headerExtra}
+            </div>
+          )}
+        </header>
+        <div className={cn("app-page-backdrop__body space-y-4", bodyClassName)}>
+          {children}
+        </div>
       </div>
-    </header>
+    </div>
   );
 }
 
-/** Celostránkový hero pro landing / přihlášení. */
+/** @deprecated Použijte SectionPage. */
+export function SectionBanner(props: SectionPageProps) {
+  return <SectionPage {...props} />;
+}
+
+/** Celostránkový úvod (landing, přihlášení). */
 export function PageHero({
   section,
   title,
@@ -56,13 +76,19 @@ export function PageHero({
 }) {
   return (
     <div
-      className={cn("app-page-hero", sectionBannerClass(section), className)}
+      className={cn("app-page-backdrop app-page-backdrop--hero", className)}
       data-section={section}
     >
-      <div className="app-page-hero__overlay" aria-hidden />
-      <div className="app-page-hero__content">
-        <h1 className="app-page-hero__title">{title}</h1>
-        {description && <p className="app-page-hero__description">{description}</p>}
+      <div className="app-page-backdrop__scrim app-page-backdrop__scrim--hero" aria-hidden />
+      <div className="app-page-backdrop__inner app-page-backdrop__inner--hero">
+        <h1 className="app-page-backdrop__title app-page-backdrop__title--hero">
+          {title}
+        </h1>
+        {description && (
+          <p className="app-page-backdrop__description app-page-backdrop__description--hero">
+            {description}
+          </p>
+        )}
         {children}
       </div>
     </div>

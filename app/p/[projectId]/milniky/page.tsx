@@ -20,7 +20,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SaveButton } from "@/components/ui/save-button";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 import { Trash2 } from "lucide-react";
 import type { MilestoneStatus } from "@prisma/client";
 
@@ -91,13 +91,12 @@ export default async function MilestonesPage({
   const serializedOverviews = overviews.map(serializeOverview);
 
   return (
-    <div className="space-y-6">
-      <SectionBanner
-        section="milestones"
-        title="Milníky a kalendář"
-        description="Časová osa stavby propojená s výdaji, fotkami a úkoly"
-      />
-
+    <SectionPage
+      section="milestones"
+      title="Milníky a kalendář"
+      description="Časová osa stavby propojená s výdaji, fotkami a úkoly"
+      bodyClassName="space-y-6"
+    >
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
@@ -239,6 +238,6 @@ export default async function MilestonesPage({
           ))
         )}
       </section>
-    </div>
+    </SectionPage>
   );
 }

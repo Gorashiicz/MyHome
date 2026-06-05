@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PageHero } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 import { APP_NAME } from "@/lib/constants";
 
 const errorMessages: Record<string, string> = {
@@ -23,12 +23,12 @@ export default async function LoginPage({
 
   return (
     <main className="app-auth-shell min-h-screen pt-4 md:pt-8">
-      <PageHero section="auth" title="Přihlášení" description={APP_NAME} />
-      <Card>
-        <CardHeader>
-          <CardTitle>Váš účet</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <SectionPage section="auth" title="Přihlášení" description={APP_NAME}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Váš účet</CardTitle>
+          </CardHeader>
+          <CardContent>
           {errorMessage && (
             <p className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
               {errorMessage}
@@ -70,8 +70,9 @@ export default async function LoginPage({
           <p className="mt-2 text-center text-xs text-muted">
             Demo: demo@stavba.cz / demo1234
           </p>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </SectionPage>
     </main>
   );
 }

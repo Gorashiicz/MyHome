@@ -8,7 +8,7 @@ import { supplierNeedsDetails } from "@/lib/supplier-display";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 export default async function SuppliersPage({
   params,
@@ -28,13 +28,12 @@ export default async function SuppliersPage({
   });
 
   return (
-    <div className="space-y-6">
-      <SectionBanner
-        section="tools"
-        title="Dodavatelé"
-        description="Kontakty z výdajů se zde objeví automaticky — doplňte telefon, IČO nebo poznámku"
-      />
-
+    <SectionPage
+      section="tools"
+      title="Dodavatelé"
+      description="Kontakty z výdajů se zde objeví automaticky — doplňte telefon, IČO nebo poznámku"
+      bodyClassName="space-y-6"
+    >
       {access?.canEdit && (
         <Card>
           <CardHeader>
@@ -112,6 +111,6 @@ export default async function SuppliersPage({
           );
         })}
       </ul>
-    </div>
+    </SectionPage>
   );
 }

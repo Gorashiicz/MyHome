@@ -1,54 +1,58 @@
 /**
- * Generuje webové bannery z obrázků ve složce pictures/.
- * Spuštění: node scripts/optimize-decor-images.mjs
+ * Generuje webové pozadí z obrázků ve složce pictures/.
+ * Zachová celou kompozici (stůl vlevo + stavba vpravo), bez agresivního ořezu.
+ * Spuštění: npm run decor:build
  */
 import sharp from "sharp";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const OUT_W = 1200;
-const OUT_H = 280;
+const MAX_WIDTH = 1400;
 
-/** @type {{ src: string; out: string; position?: sharp.Position }[]} */
+/** @type {{ src: string; out: string }[]} */
 const FILES = [
-  // Stavba — tematické sekce
-  { src: "pictures/projekt.png", out: "public/decor/stavba/home.webp", position: "right" },
-  { src: "pictures/projekt2.png", out: "public/decor/stavba/projects.webp", position: "right" },
-  { src: "pictures/finance.png", out: "public/decor/stavba/dashboard.webp", position: "right" },
-  { src: "pictures/finance2.png", out: "public/decor/stavba/auth.webp", position: "right" },
-  { src: "pictures/rozpocet.png", out: "public/decor/stavba/budget.webp", position: "right" },
-  { src: "pictures/rozpocet2.png", out: "public/decor/stavba/add.webp", position: "right" },
-  { src: "pictures/dokumenty.png", out: "public/decor/stavba/documents.webp", position: "right" },
-  { src: "pictures/dokumenty2.png", out: "public/decor/stavba/tools.webp", position: "right" },
-  { src: "pictures/zakazky.png", out: "public/decor/stavba/tasks.webp", position: "right" },
-  { src: "pictures/zakazky2.png", out: "public/decor/stavba/milestones.webp", position: "right" },
-  // Klasický — obecné ilustrace
-  { src: "pictures/default1.png", out: "public/decor/default/home.webp", position: "right" },
-  { src: "pictures/default2.png", out: "public/decor/default/auth.webp", position: "right" },
-  { src: "pictures/default3.png", out: "public/decor/default/projects.webp", position: "right" },
-  { src: "pictures/default4.png", out: "public/decor/default/dashboard.webp", position: "right" },
-  { src: "pictures/default1.png", out: "public/decor/default/budget.webp", position: "right" },
-  { src: "pictures/default2.png", out: "public/decor/default/documents.webp", position: "right" },
-  { src: "pictures/default3.png", out: "public/decor/default/tasks.webp", position: "right" },
-  { src: "pictures/default4.png", out: "public/decor/default/tools.webp", position: "right" },
-  { src: "pictures/default3.png", out: "public/decor/default/add.webp", position: "right" },
-  { src: "pictures/default4.png", out: "public/decor/default/milestones.webp", position: "right" },
+  { src: "pictures/projekt.png", out: "public/decor/stavba/home.webp" },
+  { src: "pictures/projekt2.png", out: "public/decor/stavba/projects.webp" },
+  { src: "pictures/finance.png", out: "public/decor/stavba/dashboard.webp" },
+  { src: "pictures/finance2.png", out: "public/decor/stavba/auth.webp" },
+  { src: "pictures/rozpocet.png", out: "public/decor/stavba/budget.webp" },
+  { src: "pictures/rozpocet2.png", out: "public/decor/stavba/add.webp" },
+  { src: "pictures/dokumenty.png", out: "public/decor/stavba/documents.webp" },
+  { src: "pictures/dokumenty2.png", out: "public/decor/stavba/tools.webp" },
+  { src: "pictures/zakazky.png", out: "public/decor/stavba/tasks.webp" },
+  { src: "pictures/zakazky2.png", out: "public/decor/stavba/milestones.webp" },
+  { src: "pictures/default1.png", out: "public/decor/default/home.webp" },
+  { src: "pictures/default2.png", out: "public/decor/default/auth.webp" },
+  { src: "pictures/default3.png", out: "public/decor/default/projects.webp" },
+  { src: "pictures/default4.png", out: "public/decor/default/dashboard.webp" },
+  { src: "pictures/default1.png", out: "public/decor/default/budget.webp" },
+  { src: "pictures/default2.png", out: "public/decor/default/documents.webp" },
+  { src: "pictures/default3.png", out: "public/decor/default/tasks.webp" },
+  { src: "pictures/default4.png", out: "public/decor/default/tools.webp" },
+  { src: "pictures/default3.png", out: "public/decor/default/add.webp" },
+  { src: "pictures/default4.png", out: "public/decor/default/milestones.webp" },
 ];
 
 async function main() {
   await mkdir(path.join(ROOT, "public/decor/stavba"), { recursive: true });
   await mkdir(path.join(ROOT, "public/decor/default"), { recursive: true });
 
-  for (const { src, out, position = "right" } of FILES) {
+  for (const { src, out } of FILES) {
     const input = path.join(ROOT, src);
     const output = path.join(ROOT, out);
+    const meta = await sharp(input).metadata();
     await sharp(input)
-      .resize(OUT_W, OUT_H, { fit: "cover", position })
-      .webp({ quality: 82 })
+      .resize(MAX_WIDTH, null, {
+        withoutEnlargement: true,
+        fit: "inside",
+      })
+      .webp({ quality: 80 })
       .toFile(output);
-    const stat = await sharp(output).metadata();
-    console.log(`OK ${out} (${stat.width}x${stat.height})`);
+    const outMeta = await sharp(output).metadata();
+    console.log(
+      `OK ${out} ${meta.width}x${meta.height} → ${outMeta.width}x${outMeta.height}`
+    );
   }
 }
 

@@ -6,11 +6,9 @@ import { resolveProjectRoute } from "@/lib/project-context";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
 import { BUDGET_REFERENCE_INTRO } from "@/lib/budget-labels";
 import { Button } from "@/components/ui/button";
-import {
-  BudgetCategoryTable,
-} from "@/components/budget/budget-overview";
+import { BudgetCategoryTable } from "@/components/budget/budget-overview";
 import { BudgetSummaryBar } from "@/components/budget/budget-summary-bar";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 export default async function BudgetPage({
   params,
@@ -32,9 +30,11 @@ export default async function BudgetPage({
   });
 
   return (
-    <div className="space-y-4">
-      <SectionBanner section="budget" title="Rozpočet">
-        <div className="mt-2 flex flex-wrap gap-2">
+    <SectionPage
+      section="budget"
+      title="Rozpočet"
+      headerExtra={
+        <>
           <Button asChild variant="outline" size="sm">
             <a href={`/api/export/rozpocet?projectId=${projectId}`}>
               Export CSV
@@ -43,9 +43,9 @@ export default async function BudgetPage({
           <Button asChild size="sm">
             <Link href={`/p/${projectId}/rozpocet/vydaje`}>Výdaje</Link>
           </Button>
-        </div>
-      </SectionBanner>
-
+        </>
+      }
+    >
       <p className="rounded-lg border border-emerald-100 bg-emerald-50/60 p-3 text-sm text-slate-700">
         {BUDGET_REFERENCE_INTRO}
       </p>
@@ -64,6 +64,6 @@ export default async function BudgetPage({
         categories={data.categoryStats}
         canEdit={!!access?.canEdit}
       />
-    </div>
+    </SectionPage>
   );
 }

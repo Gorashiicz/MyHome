@@ -6,7 +6,7 @@ import { formatCzk, formatDate, labelPaymentStatus } from "@/lib/formatting";
 import { expenseListTitle, expenseListPreview } from "@/lib/expense-display";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 export default async function DashboardPage({
   params,
@@ -19,13 +19,12 @@ export default async function DashboardPage({
   const data = await getDashboardData(projectId);
 
   return (
-    <div className="space-y-6">
-      <SectionBanner
-        section="dashboard"
-        title={data.project.name}
-        description="Přehled financí, termínů a posledních výdajů"
-      />
-
+    <SectionPage
+      section="dashboard"
+      title={data.project.name}
+      description="Přehled financí, termínů a posledních výdajů"
+      bodyClassName="space-y-6"
+    >
       <section className="grid gap-3 sm:grid-cols-2">
         <Card>
           <CardHeader className="pb-1">
@@ -181,6 +180,6 @@ export default async function DashboardPage({
           </ul>
         )}
       </section>
-    </div>
+    </SectionPage>
   );
 }

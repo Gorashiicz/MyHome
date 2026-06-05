@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 import { ClipboardList, Trash2 } from "lucide-react";
 
 export default async function ChecklistsPage({
@@ -29,13 +29,12 @@ export default async function ChecklistsPage({
   const checklists = await listChecklists(projectId);
 
   return (
-    <div className="space-y-6">
-      <SectionBanner
-        section="tasks"
-        title="Checklisty"
-        description="Kontrolní seznamy před betonáží, zaklopením rozvodů a dalšími kritickými kroky"
-      />
-
+    <SectionPage
+      section="tasks"
+      title="Checklisty"
+      description="Kontrolní seznamy před betonáží, zaklopením rozvodů a dalšími kritickými kroky"
+      bodyClassName="space-y-6"
+    >
       {access?.canEdit && (
         <>
           <Card>
@@ -160,6 +159,6 @@ export default async function ChecklistsPage({
           ))
         )}
       </section>
-    </div>
+    </SectionPage>
   );
 }

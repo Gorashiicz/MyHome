@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SectionBanner } from "@/components/layout/section-banner";
+import { SectionPage } from "@/components/layout/section-banner";
 
 export default async function PhotosPage({
   params,
@@ -25,13 +25,12 @@ export default async function PhotosPage({
   });
 
   return (
-    <div className="space-y-6">
-      <SectionBanner
-        section="projects"
-        title="Fotky"
-        description="Fotodokumentace stavby — důkazy před zakrytím, průběh prací"
-      />
-
+    <SectionPage
+      section="projects"
+      title="Fotky"
+      description="Fotodokumentace stavby — důkazy před zakrytím, průběh prací"
+      bodyClassName="space-y-6"
+    >
       {access?.canEdit && (
         <Card>
           <CardHeader>
@@ -110,6 +109,6 @@ export default async function PhotosPage({
           </div>
         ))}
       </div>
-    </div>
+    </SectionPage>
   );
 }
