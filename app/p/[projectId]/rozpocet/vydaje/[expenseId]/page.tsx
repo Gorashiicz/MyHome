@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getExpenseDetail } from "@/actions/expenses";
+import { getExpenseAttachments } from "@/lib/expense-attachments";
+import { ExpenseAttachments } from "@/components/expense/expense-attachments";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
 import {
@@ -21,7 +23,10 @@ export default async function ExpenseDetailPage({
   await resolveProjectRoute(projectId);
   const user = await requireUser();
   const access = await getProjectAccess(projectId, user.id);
-  const e = await getExpenseDetail(projectId, expenseId);
+  const [e, attachments] = await Promise.all([
+    getExpenseDetail(projectId, expenseId),
+    getExpenseAttachments(projectId, expenseId),
+  ]);
   const expenseSuppliers = expenseSuppliersFromRecord(e);
 
   return (
@@ -125,6 +130,13 @@ export default async function ExpenseDetailPage({
               ))}
             </div>
           )}
+
+          <ExpenseAttachments
+            projectId={projectId}
+            expenseId={expenseId}
+            attachments={attachments}
+            canEdit={!!access?.canEdit}
+          />
         </CardContent>
       </Card>
     </div>

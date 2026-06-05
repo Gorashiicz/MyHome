@@ -14,6 +14,8 @@ export const VICE_PREFIXES = [
   "/denik",
   "/dodavatele",
   "/vady",
+  "/checklisty",
+  "/milniky",
   "/sdileni",
   "/nastaveni",
 ];

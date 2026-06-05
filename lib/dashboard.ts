@@ -95,6 +95,20 @@ export async function getDashboardData(projectId: string) {
     take: 3,
   });
 
+  const upcomingMilestones = await prisma.milestone.findMany({
+    where: {
+      projectId,
+      status: { not: "done" },
+      targetDate: { not: null },
+    },
+    orderBy: { targetDate: "asc" },
+    take: 4,
+  });
+
+  const activeChecklists = await prisma.checklist.count({
+    where: { projectId, status: "active" },
+  });
+
   return {
     project,
     totalSpent,
@@ -108,5 +122,7 @@ export async function getDashboardData(projectId: string) {
     openDefects,
     recentDocuments,
     recentDiary,
+    upcomingMilestones,
+    activeChecklists,
   };
 }

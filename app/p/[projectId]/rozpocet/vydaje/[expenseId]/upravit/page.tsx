@@ -12,6 +12,7 @@ import { resolveProjectRoute } from "@/lib/project-context";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
 import { prisma } from "@/lib/db";
 import { ExpenseForm } from "@/components/forms/expense-form";
+import { getExpenseAttachments } from "@/lib/expense-attachments";
 import { ExpenseDeleteButton } from "@/components/expense/expense-delete-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -31,13 +32,14 @@ export default async function EditExpensePage({
 
   await ensureOtherBudgetCategory(projectId);
 
-  const [expense, suppliers, dashboard] = await Promise.all([
+  const [expense, suppliers, dashboard, attachments] = await Promise.all([
     getExpenseDetail(projectId, expenseId),
     prisma.supplier.findMany({
       where: { projectId },
       orderBy: { name: "asc" },
     }),
     getDashboardData(projectId),
+    getExpenseAttachments(projectId, expenseId),
   ]);
 
   const amount = toNumber(expense.amount);
@@ -90,6 +92,7 @@ export default async function EditExpensePage({
               supplierNames: supplierNames.length > 0 ? supplierNames : [""],
               note: expense.note ?? "",
             }}
+            attachments={attachments}
           />
         </CardContent>
       </Card>

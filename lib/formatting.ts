@@ -3,6 +3,7 @@ import { cs } from "date-fns/locale";
 import type {
   BudgetMode,
   DefectStatus,
+  MilestoneStatus,
   PaymentStatus,
   ProjectStatus,
   ProjectRole,
@@ -83,6 +84,12 @@ const roleLabels: Record<ProjectRole, string> = {
   viewer: "Pouze čtení",
 };
 
+const milestoneStatusLabels: Record<MilestoneStatus, string> = {
+  planned: "Plánováno",
+  in_progress: "Probíhá",
+  done: "Hotovo",
+};
+
 export function labelPaymentStatus(s: PaymentStatus) {
   return paymentStatusLabels[s];
 }
@@ -109,6 +116,10 @@ export function labelDefectStatus(s: DefectStatus) {
 
 export function labelRole(s: ProjectRole) {
   return roleLabels[s];
+}
+
+export function labelMilestoneStatus(s: MilestoneStatus) {
+  return milestoneStatusLabels[s];
 }
 
 export function toNumber(value: { toString(): string } | number | null | undefined) {

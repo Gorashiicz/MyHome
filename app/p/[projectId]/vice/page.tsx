@@ -9,9 +9,13 @@ import {
   AlertTriangle,
   Share2,
   Settings,
+  ClipboardList,
+  Flag,
 } from "lucide-react";
 
 const links = [
+  { href: "milniky", label: "Milníky a kalendář", icon: Flag },
+  { href: "checklisty", label: "Checklisty", icon: ClipboardList },
   { href: "fotky", label: "Fotky", icon: Camera },
   { href: "ukoly", label: "Úkoly", icon: CheckSquare },
   { href: "denik", label: "Stavební deník", icon: BookOpen },

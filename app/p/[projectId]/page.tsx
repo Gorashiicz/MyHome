@@ -68,6 +68,46 @@ export default async function DashboardPage({
         </Card>
       </section>
 
+      {(data.upcomingMilestones.length > 0 || data.activeChecklists > 0) && (
+        <section className="grid gap-3 sm:grid-cols-2">
+          {data.upcomingMilestones.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted">
+                  <Link href={`/p/${projectId}/milniky`} className="app-link">
+                    Nadcházející milníky →
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                {data.upcomingMilestones.map((m) => (
+                  <div key={m.id} className="flex justify-between gap-2">
+                    <span className="font-medium">{m.title}</span>
+                    <span className="shrink-0 text-muted">
+                      {m.targetDate && formatDate(m.targetDate)}
+                    </span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+          {data.activeChecklists > 0 && (
+            <Card>
+              <CardContent className="pt-4">
+                <Link
+                  href={`/p/${projectId}/checklisty`}
+                  className="app-link text-sm font-medium"
+                >
+                  Aktivní checklisty
+                </Link>
+                <p className="mt-1 text-2xl font-bold">{data.activeChecklists}</p>
+                <p className="text-xs text-muted">probíhajících kontrol</p>
+              </CardContent>
+            </Card>
+          )}
+        </section>
+      )}
+
       {data.upcomingTasks.length > 0 && (
         <section>
           <h2 className="mb-2 font-semibold">Nejbližší termíny</h2>

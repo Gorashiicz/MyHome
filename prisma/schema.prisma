@@ -93,6 +93,17 @@ enum InviteStatus {
   revoked
 }
 
+enum MilestoneStatus {
+  planned
+  in_progress
+  done
+}
+
+enum ChecklistStatus {
+  active
+  completed
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -119,6 +130,7 @@ model User {
   comments       Comment[]
   auditLogs      AuditLog[]
   invitations    Invitation[]    @relation("InvitationInviter")
+  checklists     Checklist[]     @relation("ChecklistCreator")
 }
 
 model Account {
@@ -192,6 +204,8 @@ model Project {
   comments         Comment[]
   invitations      Invitation[]
   auditLogs        AuditLog[]
+  milestones       Milestone[]
+  checklists       Checklist[]
 
   @@index([ownerId])
   @@index([status])
@@ -225,8 +239,9 @@ model BudgetCategory {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  expenses Expense[]
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  expenses   Expense[]
+  milestones Milestone[]
 
   @@index([projectId])
 }
@@ -505,4 +520,60 @@ model AuditLog {
 
   @@index([projectId])
   @@index([createdAt])
+}
+
+model Milestone {
+  id          String          @id @default(cuid())
+  projectId   String
+  title       String
+  description String?         @db.Text
+  status      MilestoneStatus @default(planned)
+  targetDate  DateTime?
+  completedAt DateTime?
+  stage       String?
+  categoryId  String?
+  sortOrder   Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  project  Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  category BudgetCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([targetDate])
+  @@index([categoryId])
+}
+
+model Checklist {
+  id          String          @id @default(cuid())
+  projectId   String
+  title       String
+  templateKey String?
+  stage       String?
+  location    String?
+  status      ChecklistStatus @default(active)
+  completedAt DateTime?
+  createdById String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User            @relation("ChecklistCreator", fields: [createdById], references: [id])
+  items     ChecklistItem[]
+
+  @@index([projectId])
+}
+
+model ChecklistItem {
+  id          String    @id @default(cuid())
+  checklistId String
+  title       String
+  sortOrder   Int       @default(0)
+  isDone      Boolean   @default(false)
+  doneAt      DateTime?
+  note        String?   @db.Text
+
+  checklist Checklist @relation(fields: [checklistId], references: [id], onDelete: Cascade)
+
+  @@index([checklistId])
 }
