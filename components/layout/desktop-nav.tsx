@@ -17,7 +17,7 @@ export function DesktopNav({ projectId }: { projectId: string }) {
 
   return (
     <nav
-      className="hidden border-b-2 border-emerald-200 bg-emerald-50/80 md:block"
+      className="app-desktop-nav hidden md:block"
       aria-label="Hlavní navigace"
     >
       <div className="mx-auto flex max-w-5xl gap-2 overflow-x-auto px-4 py-3">

@@ -118,7 +118,7 @@ export function ExpenseForm({
       />
 
       {selectedOption && (
-        <div className="rounded-md bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <div className="rounded-md app-info-box">
           {isOther ? (
             <p>
               Výdaj se započítá do položky <strong>{selectedOption.name}</strong>
@@ -137,7 +137,7 @@ export function ExpenseForm({
                   </>
                 )}
               </p>
-              <p className="mt-1 text-emerald-700">
+              <p className="mt-1 text-primary">
                 Níže doplňte popis této části — např. krytina, krov nebo
                 klempířské práce. Všechny výdaje se sečtou proti této položce
                 rozpočtu.

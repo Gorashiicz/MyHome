@@ -46,13 +46,11 @@ export function isNavItemActive(pathname: string, href: string, base: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Stejný výrazný styl pro všechny položky — neaktivní = zelený rámeček, aktivní = plná zelená. */
+/** Stejný výrazný styl pro všechny položky navigace. */
 export function navItemClasses(active: boolean) {
-  return active
-    ? "border-emerald-800 bg-emerald-600 text-white shadow-lg ring-2 ring-emerald-300"
-    : "border-emerald-600 bg-emerald-100 text-emerald-900 shadow-sm hover:border-emerald-700 hover:bg-emerald-200 hover:shadow-md";
+  return active ? "app-nav-item app-nav-item--active" : "app-nav-item";
 }
 
 export function navIconClasses(active: boolean) {
-  return active ? "text-white" : "text-emerald-700";
+  return active ? "app-nav-icon app-nav-icon--active" : "app-nav-icon";
 }

@@ -59,13 +59,13 @@ export default async function LoginPage({
               Přihlásit se
             </Button>
           </form>
-          <p className="mt-4 text-center text-sm text-slate-600">
+          <p className="mt-4 text-center text-sm text-muted">
             Nemáte účet?{" "}
-            <Link href="/registrace" className="text-emerald-700 hover:underline">
+            <Link href="/registrace" className="app-link font-medium">
               Registrace
             </Link>
           </p>
-          <p className="mt-2 text-center text-xs text-slate-400">
+          <p className="mt-2 text-center text-xs text-muted">
             Demo: demo@stavba.cz / demo1234
           </p>
         </CardContent>

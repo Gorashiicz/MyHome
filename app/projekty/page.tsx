@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireUser, getUserProjects } from "@/lib/permissions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ThemeSettingsCard } from "@/components/theme/theme-settings-card";
 import { labelProjectStatus, labelBudgetMode } from "@/lib/formatting";
 import { signOut } from "@/lib/auth";
 
@@ -14,7 +15,7 @@ export default async function ProjectsPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Moje stavby</h1>
-          <p className="text-sm text-slate-600">{user.email}</p>
+          <p className="text-sm text-muted">{user.email}</p>
         </div>
         <form
           action={async () => {
@@ -32,10 +33,14 @@ export default async function ProjectsPage() {
         <Link href="/projekty/nova">+ Nová stavba</Link>
       </Button>
 
-      <ul className="mt-6 space-y-3">
+      <div className="mt-8">
+        <ThemeSettingsCard />
+      </div>
+
+      <ul className="mt-8 space-y-3">
         {projects.length === 0 && (
           <Card>
-            <CardContent className="py-8 text-center text-slate-600">
+            <CardContent className="py-8 text-center text-muted">
               Zatím nemáte žádnou stavbu. Vytvořte první projekt.
             </CardContent>
           </Card>
@@ -43,11 +48,11 @@ export default async function ProjectsPage() {
         {projects.map((p) => (
           <li key={p.id}>
             <Link href={`/p/${p.id}`}>
-              <Card className="transition hover:border-emerald-300">
+              <Card className="transition hover:border-primary/40">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">{p.name}</CardTitle>
                 </CardHeader>
-                <CardContent className="flex gap-2 text-sm text-slate-600">
+                <CardContent className="flex gap-2 text-sm text-muted">
                   <span>{labelProjectStatus(p.status)}</span>
                   <span>·</span>
                   <span>{labelBudgetMode(p.budgetMode)}</span>

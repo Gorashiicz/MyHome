@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { resolveProjectRoute } from "@/lib/project-context";
+import { ThemeSettingsCard } from "@/components/theme/theme-settings-card";
 import {
   Camera,
   CheckSquare,
@@ -30,21 +31,29 @@ export default async function MorePage({
   const base = `/p/${projectId}`;
 
   return (
-    <div>
+    <div className="space-y-6">
       <h1 className="text-xl font-bold">Více</h1>
-      <ul className="mt-6 space-y-2">
+
+      <ThemeSettingsCard />
+
+      <section>
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
+          Nástroje
+        </h2>
+        <ul className="space-y-2">
         {links.map(({ href, label, icon: Icon }) => (
           <li key={href}>
             <Link
               href={`${base}/${href}`}
-              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 hover:border-emerald-300"
+              className="app-list-link flex items-center gap-3 p-4"
             >
-              <Icon className="h-5 w-5 text-emerald-600" />
+              <Icon className="app-list-link-icon h-5 w-5" />
               <span className="font-medium">{label}</span>
             </Link>
           </li>
         ))}
-      </ul>
+        </ul>
+      </section>
     </div>
   );
 }

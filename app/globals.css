@@ -1,21 +1,246 @@
 @import "tailwindcss";
 
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+/* ── Klasický (default) ── */
+:root,
+[data-theme="default"] {
+  --app-bg: #f8fafc;
+  --app-fg: #0f172a;
+  --app-surface: #ffffff;
+  --app-surface-muted: #f1f5f9;
+  --app-border: #e2e8f0;
+  --app-muted: #64748b;
+  --app-primary: #059669;
+  --app-primary-hover: #047857;
+  --app-primary-soft: #ecfdf5;
+  --app-primary-muted: #d1fae5;
+  --app-link: #047857;
+  --app-nav-bg: #d1fae5;
+  --app-nav-fg: #064e3b;
+  --app-nav-border: #059669;
+  --app-nav-active-border: #065f46;
+  --app-header-bg: rgba(255, 255, 255, 0.95);
+  --app-nav-bar-bg: rgba(236, 253, 245, 0.85);
+  --app-nav-bar-border: #a7f3d0;
+  --app-shadow-nav: 0 -4px 24px rgba(5, 150, 105, 0.14);
+  --app-radius-lg: 0.75rem;
+  --app-radius-xl: 0.75rem;
+}
+
+/* ── Stavba — teplý stavební styl ── */
+[data-theme="stavba"] {
+  --app-bg: #f3ebe0;
+  --app-fg: #2a2218;
+  --app-surface: #fffdf9;
+  --app-surface-muted: #f0e6d8;
+  --app-border: #ddd0c0;
+  --app-muted: #7a6b5c;
+  --app-primary: #c4652a;
+  --app-primary-hover: #a85422;
+  --app-primary-soft: #fef0e4;
+  --app-primary-muted: #fce8d4;
+  --app-link: #b3561f;
+  --app-nav-bg: #fce8d4;
+  --app-nav-fg: #5c3d1e;
+  --app-nav-border: #d4844a;
+  --app-nav-active-border: #8b4513;
+  --app-header-bg: rgba(255, 253, 249, 0.97);
+  --app-nav-bar-bg: rgba(254, 240, 228, 0.92);
+  --app-nav-bar-border: #e8c4a8;
+  --app-shadow-nav: 0 -4px 24px rgba(180, 90, 40, 0.14);
+  --app-radius-lg: 1rem;
+  --app-radius-xl: 1.125rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--app-bg);
+  --color-foreground: var(--app-fg);
+  --color-surface: var(--app-surface);
+  --color-surface-muted: var(--app-surface-muted);
+  --color-border: var(--app-border);
+  --color-muted: var(--app-muted);
+  --color-primary: var(--app-primary);
+  --color-primary-hover: var(--app-primary-hover);
+  --color-primary-soft: var(--app-primary-soft);
+  --color-primary-muted: var(--app-primary-muted);
+  --color-link: var(--app-link);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--app-bg);
+  color: var(--app-fg);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+[data-theme="stavba"] body {
+  background-color: var(--app-bg);
+  background-image:
+    radial-gradient(
+      ellipse 80% 50% at 15% -10%,
+      rgba(196, 101, 42, 0.09),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 95% 100%,
+      rgba(160, 120, 70, 0.08),
+      transparent 50%
+    );
 }
 
 .pb-safe {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+/* Odkazy */
+.app-link {
+  color: var(--app-link);
+}
+.app-link:hover {
+  text-decoration: underline;
+}
+
+/* Hlavička projektu */
+.app-header {
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-header-bg);
+  backdrop-filter: blur(8px);
+}
+
+/* Navigace */
+.app-desktop-nav {
+  border-bottom: 2px solid var(--app-nav-bar-border);
+  background: var(--app-nav-bar-bg);
+}
+
+.app-mobile-nav {
+  border-top: 2px solid var(--app-nav-bar-border);
+  background: var(--app-surface);
+  box-shadow: var(--app-shadow-nav);
+}
+
+.app-nav-item {
+  border: 2px solid var(--app-nav-border);
+  background: var(--app-nav-bg);
+  color: var(--app-nav-fg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border-radius: var(--app-radius-lg);
+}
+
+.app-nav-item:hover {
+  filter: brightness(0.97);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.app-nav-item--active {
+  border-color: var(--app-nav-active-border);
+  background: var(--app-primary);
+  color: #ffffff;
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--app-primary) 35%, transparent),
+    0 0 0 2px color-mix(in srgb, var(--app-primary) 25%, transparent);
+}
+
+.app-nav-icon {
+  color: var(--app-link);
+}
+
+.app-nav-icon--active {
+  color: #ffffff;
+}
+
+/* Karty v seznamu (Více, projekty…) */
+.app-list-link {
+  border: 1px solid var(--app-border);
+  background: var(--app-surface);
+  border-radius: var(--app-radius-xl);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.app-list-link:hover {
+  border-color: color-mix(in srgb, var(--app-primary) 45%, var(--app-border));
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--app-primary) 12%, transparent);
+}
+
+.app-list-link-icon {
+  color: var(--app-primary);
+}
+
+/* Info box ve formulářích */
+.app-info-box {
+  border-radius: var(--app-radius-lg);
+  background: var(--app-primary-soft);
+  color: color-mix(in srgb, var(--app-fg) 85%, var(--app-primary));
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+/* Zpětná kompatibilita — emerald/slate třídy v existujících stránkách */
+[data-theme="stavba"] .text-emerald-700,
+[data-theme="stavba"] .text-emerald-600,
+[data-theme="stavba"] .text-emerald-800,
+[data-theme="stavba"] .text-emerald-900 {
+  color: var(--app-link);
+}
+
+[data-theme="stavba"] .bg-emerald-50,
+[data-theme="stavba"] .bg-emerald-50\/80 {
+  background-color: var(--app-primary-soft);
+}
+
+[data-theme="stavba"] .bg-emerald-100 {
+  background-color: var(--app-nav-bg);
+}
+
+[data-theme="stavba"] .bg-emerald-600 {
+  background-color: var(--app-primary);
+}
+
+[data-theme="stavba"] .border-emerald-200,
+[data-theme="stavba"] .border-emerald-300,
+[data-theme="stavba"] .border-emerald-600,
+[data-theme="stavba"] .border-emerald-800 {
+  border-color: var(--app-border);
+}
+
+[data-theme="stavba"] .hover\:border-emerald-300:hover {
+  border-color: color-mix(in srgb, var(--app-primary) 50%, var(--app-border));
+}
+
+[data-theme="stavba"] .ring-emerald-300,
+[data-theme="stavba"] .ring-emerald-500\/40 {
+  --tw-ring-color: color-mix(in srgb, var(--app-primary) 35%, transparent);
+}
+
+[data-theme="stavba"] .shadow-emerald-700\/30,
+[data-theme="stavba"] .shadow-emerald-700\/35 {
+  --tw-shadow-color: color-mix(in srgb, var(--app-primary) 30%, transparent);
+}
+
+[data-theme="stavba"] .border-slate-200 {
+  border-color: var(--app-border);
+}
+
+[data-theme="stavba"] .bg-white {
+  background-color: var(--app-surface);
+}
+
+[data-theme="stavba"] .text-slate-600,
+[data-theme="stavba"] .text-slate-500 {
+  color: var(--app-muted);
+}
+
+[data-theme="stavba"] .text-slate-900 {
+  color: var(--app-fg);
+}
+
+[data-theme="stavba"] .bg-slate-100 {
+  background-color: var(--app-surface-muted);
+}
+
+[data-theme="stavba"] .hover\:bg-slate-50:hover,
+[data-theme="stavba"] .hover\:bg-slate-100:hover {
+  background-color: var(--app-surface-muted);
 }

@@ -17,7 +17,7 @@ export function MobileNav({ projectId }: { projectId: string }) {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t-2 border-emerald-200 bg-white pb-safe shadow-[0_-4px_24px_rgba(5,150,105,0.15)] md:hidden"
+      className="app-mobile-nav fixed bottom-0 left-0 right-0 z-50 pb-safe md:hidden"
       aria-label="Hlavní navigace"
     >
       <ul className="mx-auto flex max-w-lg items-stretch gap-1.5 px-2 py-2.5">
