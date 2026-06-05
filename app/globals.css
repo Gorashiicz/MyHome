@@ -329,24 +329,20 @@ body {
   background: var(--app-surface);
 }
 
-/* Celá ilustrace viditelná — stůl vlevo, stavba vpravo */
+/* Banner 3:1 — široké ilustrace bez modrých okrajů */
 .app-section-hero__art {
   display: block;
   width: 100%;
-  height: clamp(10rem, 48vw, 17rem);
-  background-color: #b8cede;
+  aspect-ratio: 3 / 1;
+  background-color: var(--app-muted);
   background-image: var(--section-banner-image);
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-[data-theme="stavba"] .app-section-hero__art {
-  background-color: #d5c4b4;
-}
-
 .app-section-hero__art--landing {
-  height: clamp(11rem, 52vw, 19rem);
+  aspect-ratio: 3 / 1;
 }
 
 .app-section-hero__bar {
