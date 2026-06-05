@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { fileDownloadUrl } from "@/lib/file-urls";
 import { formatCzk, formatDate, labelMilestoneStatus } from "@/lib/formatting";
 import { Badge } from "@/components/ui/badge";
 import type { MilestoneStatus } from "@prisma/client";
@@ -129,14 +130,14 @@ export function MilestoneDetailPanel({
                 {detail.photos.map((p) => (
                   <a
                     key={p.id}
-                    href={`/api/soubory/${p.storagePath}`}
+                    href={fileDownloadUrl("photo", p.id)}
                     target="_blank"
                     rel="noreferrer"
                     className="overflow-hidden rounded-lg border border-border"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={`/api/soubory/${p.storagePath}`}
+                      src={fileDownloadUrl("photo", p.id)}
                       alt={p.title ?? "Fotka"}
                       className="aspect-square w-full object-cover"
                     />

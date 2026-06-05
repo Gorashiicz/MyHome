@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SectionPage } from "@/components/layout/section-banner";
+import { fileDownloadUrl } from "@/lib/file-urls";
 
 export default async function PhotosPage({
   params,
@@ -88,7 +89,7 @@ export default async function PhotosPage({
           <div key={p.id} className="overflow-hidden rounded-lg border bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`/api/soubory/${p.storagePath}`}
+              src={fileDownloadUrl("photo", p.id)}
               alt={p.title ?? "Fotka"}
               className="aspect-square w-full object-cover"
             />

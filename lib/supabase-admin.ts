@@ -8,6 +8,15 @@ export function isCloudStorageEnabled() {
   );
 }
 
+/** Na Vercelu musí být Supabase — lokální disk se neukládá mezi požadavky. */
+export function requirePersistentStorage() {
+  if (process.env.VERCEL && !isCloudStorageEnabled()) {
+    throw new Error(
+      "Na serveru chybí Supabase úložiště. Nastavte SUPABASE_URL a SUPABASE_SERVICE_ROLE_KEY ve Vercel (Production i Preview)."
+    );
+  }
+}
+
 export function getStorageBucketName() {
   return process.env.SUPABASE_STORAGE_BUCKET ?? "stavba-uploads";
 }

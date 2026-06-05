@@ -8,6 +8,7 @@ import {
   Receipt,
   Trash2,
 } from "lucide-react";
+import { fileDownloadUrl } from "@/lib/file-urls";
 import { deleteExpenseAttachment } from "@/actions/attachments";
 import { labelAttachmentType } from "@/lib/expense-attachments";
 import { formatCzk, formatDate } from "@/lib/formatting";
@@ -72,7 +73,7 @@ export function InvoiceAttachmentList({
     <ul className="space-y-2">
       {items.map((item) => {
         const expanded = expandedId === item.id;
-        const fileUrl = `/api/soubory/${item.storagePath}`;
+        const fileUrl = fileDownloadUrl("attachment", item.id);
 
         return (
           <li

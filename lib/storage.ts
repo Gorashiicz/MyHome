@@ -6,6 +6,7 @@ import {
   getStorageBucketName,
   getSupabaseAdmin,
   isCloudStorageEnabled,
+  requirePersistentStorage,
 } from "@/lib/supabase-admin";
 
 const UPLOAD_ROOT = path.join(process.cwd(), "uploads");
@@ -34,6 +35,7 @@ export async function saveUploadedFile(
   originalName: string;
 }> {
   validateUpload(file);
+  requirePersistentStorage();
   const ext = path.extname(file.name) || "";
   const storedName = `${randomUUID()}${ext}`;
   const storagePath = path
@@ -77,10 +79,24 @@ export async function readStoredFile(storagePath: string) {
       .from(getStorageBucketName())
       .download(storagePath);
     if (error || !data) {
-      throw new Error(error?.message ?? "Soubor nenalezen.");
+      throw new Error(error?.message ?? "Soubor v úložišti nenalezen.");
     }
     return Buffer.from(await data.arrayBuffer());
   }
 
   return readFile(getAbsoluteStoragePath(storagePath));
+}
+
+export async function createStoredFileSignedUrl(
+  storagePath: string,
+  expiresInSeconds = 3600
+) {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase.storage
+    .from(getStorageBucketName())
+    .createSignedUrl(storagePath, expiresInSeconds);
+  if (error || !data?.signedUrl) {
+    throw new Error(error?.message ?? "Nepodařilo se vytvořit odkaz ke stažení.");
+  }
+  return data.signedUrl;
 }

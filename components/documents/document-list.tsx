@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown, ExternalLink, FileText, Trash2 } from "lucide-react";
 import type { DocumentType } from "@prisma/client";
 import { labelDocumentType } from "@/lib/document-types";
+import { fileDownloadUrl } from "@/lib/file-urls";
 import { formatDate } from "@/lib/formatting";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,7 @@ export function DocumentList({
         {documents.map((doc) => {
           const expanded = expandedId === doc.id;
           const fileUrl = doc.storagePath
-            ? `/api/soubory/${doc.storagePath}`
+            ? fileDownloadUrl("document", doc.id)
             : null;
 
           return (

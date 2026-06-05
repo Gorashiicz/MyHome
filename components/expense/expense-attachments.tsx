@@ -3,6 +3,7 @@ import {
   deleteExpenseAttachment,
 } from "@/actions/attachments";
 import type { ExpenseAttachmentItem } from "@/lib/expense-attachments";
+import { fileDownloadUrl } from "@/lib/file-urls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +41,7 @@ export function ExpenseAttachments({
       ) : (
         <ul className="space-y-2">
           {attachments.map((a) => {
-            const url = `/api/soubory/${a.storagePath}`;
+            const url = fileDownloadUrl("attachment", a.id);
             return (
               <li
                 key={a.id}
