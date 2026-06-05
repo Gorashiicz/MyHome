@@ -1,3 +1,7 @@
+"use client";
+
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   addExpenseAttachment,
   deleteExpenseAttachment,
@@ -21,6 +25,24 @@ function isImageMime(mime: string) {
   return mime.startsWith("image/");
 }
 
+type UploadState = { error?: string; success?: boolean };
+
+async function uploadAttachment(
+  projectId: string,
+  expenseId: string,
+  _prev: UploadState,
+  formData: FormData
+): Promise<UploadState> {
+  try {
+    await addExpenseAttachment(projectId, expenseId, formData);
+    return { success: true };
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "Nahrání se nezdařilo.",
+    };
+  }
+}
+
 export function ExpenseAttachments({
   projectId,
   expenseId,
@@ -32,9 +54,32 @@ export function ExpenseAttachments({
   attachments: ExpenseAttachmentItem[];
   canEdit: boolean;
 }) {
+  const router = useRouter();
+  const [uploadState, uploadAction, uploadPending] = useActionState(
+    uploadAttachment.bind(null, projectId, expenseId),
+    {}
+  );
+
+  useEffect(() => {
+    if (uploadState.success) {
+      router.refresh();
+    }
+  }, [uploadState.success, router]);
+
   return (
     <section className="space-y-3">
       <h3 className="text-sm font-semibold">Faktury a účtenky</h3>
+
+      {uploadState.success && (
+        <p className="rounded-lg bg-primary-soft px-3 py-2 text-sm text-primary">
+          Soubor byl úspěšně nahrán a uložen.
+        </p>
+      )}
+      {uploadState.error && (
+        <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {uploadState.error}
+        </p>
+      )}
 
       {attachments.length === 0 ? (
         <p className="text-sm text-muted">Zatím žádné přílohy.</p>
@@ -89,7 +134,8 @@ export function ExpenseAttachments({
 
       {canEdit && (
         <form
-          action={addExpenseAttachment.bind(null, projectId, expenseId)}
+          action={uploadAction}
+          encType="multipart/form-data"
           className="space-y-2 rounded-lg border border-dashed border-border bg-surface-muted/40 p-3"
         >
           <Label htmlFor={`attachment-${expenseId}`}>Přidat fakturu / účtenku</Label>
@@ -100,7 +146,14 @@ export function ExpenseAttachments({
             accept="image/*,application/pdf"
             required
           />
-          <SaveButton label="Nahrát přílohu" size="sm" />
+          <p className="text-xs text-muted">
+            Vyberte soubor a potvrďte tlačítkem níže — samo se neuloží.
+          </p>
+          <SaveButton
+            label={uploadPending ? "Nahrávám…" : "Nahrát a uložit soubor"}
+            className="w-full"
+            disabled={uploadPending}
+          />
         </form>
       )}
     </section>

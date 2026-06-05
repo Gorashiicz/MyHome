@@ -13,6 +13,7 @@ import { getProjectAccess, requireUser } from "@/lib/permissions";
 import { prisma } from "@/lib/db";
 import { ExpenseForm } from "@/components/forms/expense-form";
 import { getExpenseAttachments } from "@/lib/expense-attachments";
+import { ExpenseAttachments } from "@/components/expense/expense-attachments";
 import { ExpenseDeleteButton } from "@/components/expense/expense-delete-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -92,7 +93,20 @@ export default async function EditExpensePage({
               supplierNames: supplierNames.length > 0 ? supplierNames : [""],
               note: expense.note ?? "",
             }}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Faktury a účtenky</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ExpenseAttachments
+            projectId={projectId}
+            expenseId={expenseId}
             attachments={attachments}
+            canEdit
           />
         </CardContent>
       </Card>

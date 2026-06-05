@@ -14,8 +14,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 import { formatCzk } from "@/lib/formatting";
 import { SupplierNamesField } from "@/components/forms/supplier-names-field";
-import { ExpenseAttachments } from "@/components/expense/expense-attachments";
-import type { ExpenseAttachmentItem } from "@/lib/expense-attachments";
 import type { PaymentStatus } from "@prisma/client";
 
 type SelectOption = { id: string; name: string };
@@ -49,8 +47,6 @@ export function ExpenseForm({
   defaultTitle,
   expenseId,
   initialValues,
-  attachments = [],
-  canEditAttachments = true,
 }: {
   projectId: string;
   suppliers: SelectOption[];
@@ -59,8 +55,6 @@ export function ExpenseForm({
   defaultTitle?: string;
   expenseId?: string;
   initialValues?: ExpenseFormValues;
-  attachments?: ExpenseAttachmentItem[];
-  canEditAttachments?: boolean;
 }) {
   const isEdit = !!expenseId && !!initialValues;
   const today = new Date().toISOString().slice(0, 10);
@@ -116,7 +110,7 @@ export function ExpenseForm({
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} encType="multipart/form-data" className="space-y-4">
       <BudgetCategoryPicker
         options={budgetOptions}
         selectedId={selectedBudgetId}
@@ -241,7 +235,7 @@ export function ExpenseForm({
         onChange={setSupplierNames}
       />
 
-      {!isEdit ? (
+      {!isEdit && (
         <div>
           <Label htmlFor="attachment">Faktura / účtenka</Label>
           <Input
@@ -252,18 +246,9 @@ export function ExpenseForm({
             className="mt-1"
           />
           <p className="mt-1 text-xs text-muted">
-            Volitelné — můžete doplnit i později na detailu výdaje.
+            Volitelné — nahraje se spolu s výdajem po kliknutí na „Uložit výdaj“.
           </p>
         </div>
-      ) : (
-        expenseId && (
-          <ExpenseAttachments
-            projectId={projectId}
-            expenseId={expenseId}
-            attachments={attachments}
-            canEdit={canEditAttachments}
-          />
-        )
       )}
 
       <div>

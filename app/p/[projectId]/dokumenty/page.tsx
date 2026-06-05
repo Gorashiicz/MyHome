@@ -73,10 +73,11 @@ export default async function DocumentsPage({
             <CardTitle className="text-base">Nahrát dokument</CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              action={createDocument.bind(null, projectId)}
-              className="space-y-3"
-            >
+              <form
+                action={createDocument.bind(null, projectId)}
+                encType="multipart/form-data"
+                className="space-y-3"
+              >
               <div>
                 <Label htmlFor="title">Název *</Label>
                 <Input id="title" name="title" required className="mt-1" />
