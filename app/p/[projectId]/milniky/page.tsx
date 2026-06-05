@@ -20,6 +20,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SaveButton } from "@/components/ui/save-button";
+import { SectionBanner } from "@/components/layout/section-banner";
 import { Trash2 } from "lucide-react";
 import type { MilestoneStatus } from "@prisma/client";
 
@@ -91,12 +92,11 @@ export default async function MilestonesPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold">Milníky a kalendář</h1>
-        <p className="mt-1 text-sm text-muted">
-          Časová osa stavby propojená s výdaji, fotkami a úkoly.
-        </p>
-      </div>
+      <SectionBanner
+        section="milestones"
+        title="Milníky a kalendář"
+        description="Časová osa stavby propojená s výdaji, fotkami a úkoly"
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

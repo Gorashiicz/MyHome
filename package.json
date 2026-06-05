@@ -19,6 +19,7 @@
     "db:studio": "prisma studio",
     "setup": "powershell -ExecutionPolicy Bypass -File scripts/setup-database.ps1",
     "budget:import": "node scripts/generate-sample-budget.mjs",
+    "decor:build": "node scripts/optimize-decor-images.mjs",
     "postinstall": "prisma generate"
   },
   "prisma": {
@@ -67,6 +68,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.19",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5",

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function DocumentsPage({
   params,
@@ -38,7 +39,11 @@ export default async function DocumentsPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Dokumenty</h1>
+      <SectionBanner
+        section="documents"
+        title="Dokumenty"
+        description="Smlouvy, povolení, revize a další dokumentace stavby"
+      />
 
       <Card>
         {access?.canEdit && (

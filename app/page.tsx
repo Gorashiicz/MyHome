@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/layout/section-banner";
 import { APP_NAME } from "@/lib/constants";
 
 export default async function HomePage() {
@@ -9,13 +10,13 @@ export default async function HomePage() {
   if (session?.user) redirect("/projekty");
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-12">
-      <h1 className="text-3xl font-bold text-slate-900">{APP_NAME}</h1>
-      <p className="mt-3 text-muted">
-        Mějte celou stavbu pod kontrolou — rozpočet, výdaje, faktury, dokumenty,
-        fotky a termíny na jednom místě.
-      </p>
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+    <main className="min-h-screen">
+      <PageHero
+        section="home"
+        title={APP_NAME}
+        description="Mějte celou stavbu pod kontrolou — rozpočet, výdaje, faktury, dokumenty, fotky a termíny na jednom místě."
+      />
+      <div className="mx-auto flex max-w-lg flex-col gap-3 px-6 pb-12 pt-2 sm:flex-row">
         <Button asChild size="lg" className="flex-1">
           <Link href="/registrace">Začít zdarma</Link>
         </Button>

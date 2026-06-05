@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { ThemeSettingsCard } from "@/components/theme/theme-settings-card";
+import { SectionBanner } from "@/components/layout/section-banner";
 import {
   Camera,
   CheckSquare,
@@ -36,7 +37,11 @@ export default async function MorePage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Více</h1>
+      <SectionBanner
+        section="tools"
+        title="Více"
+        description="Fotky, deník, dodavatelé, checklisty a další nástroje"
+      />
 
       <ThemeSettingsCard />
 

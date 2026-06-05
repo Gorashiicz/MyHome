@@ -6,13 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHero } from "@/components/layout/section-banner";
 
 export default function RegisterPage() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
+    <main className="app-auth-shell min-h-screen pt-4 md:pt-8">
+      <PageHero
+        section="auth"
+        title="Registrace"
+        description="Vytvořte si účet a začněte sledovat svou stavbu."
+      />
       <Card>
         <CardHeader>
-          <CardTitle>Registrace</CardTitle>
+          <CardTitle>Nový účet</CardTitle>
         </CardHeader>
         <CardContent>
           <form

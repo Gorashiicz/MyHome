@@ -10,6 +10,7 @@ import {
   BudgetCategoryTable,
 } from "@/components/budget/budget-overview";
 import { BudgetSummaryBar } from "@/components/budget/budget-summary-bar";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function BudgetPage({
   params,
@@ -32,9 +33,8 @@ export default async function BudgetPage({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-xl font-bold">Rozpočet</h1>
-        <div className="flex gap-2">
+      <SectionBanner section="budget" title="Rozpočet">
+        <div className="mt-2 flex flex-wrap gap-2">
           <Button asChild variant="outline" size="sm">
             <a href={`/api/export/rozpocet?projectId=${projectId}`}>
               Export CSV
@@ -44,7 +44,7 @@ export default async function BudgetPage({
             <Link href={`/p/${projectId}/rozpocet/vydaje`}>Výdaje</Link>
           </Button>
         </div>
-      </div>
+      </SectionBanner>
 
       <p className="rounded-lg border border-emerald-100 bg-emerald-50/60 p-3 text-sm text-slate-700">
         {BUDGET_REFERENCE_INTRO}

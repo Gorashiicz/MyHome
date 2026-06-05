@@ -9,6 +9,7 @@ import {
   FileUp,
 } from "lucide-react";
 import { resolveProjectRoute } from "@/lib/project-context";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 const actions = [
   { href: "vydaj", label: "Přidat výdaj", icon: Wallet },
@@ -31,9 +32,12 @@ export default async function QuickAddPage({
 
   return (
     <div>
-      <h1 className="text-xl font-bold">Přidat</h1>
-      <p className="text-sm text-slate-600">Rychlý zápis na stavbě</p>
-      <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+      <SectionBanner
+        section="add"
+        title="Přidat"
+        description="Rychlý zápis na stavbě — výdaj, fotka, úkol nebo dokument"
+      />
+      <ul className="mt-2 grid gap-3 sm:grid-cols-2">
         {actions.map(({ href, label, icon: Icon }) => (
           <li key={href}>
             <Link

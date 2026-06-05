@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function SharingPage({
   params,
@@ -37,7 +38,11 @@ export default async function SharingPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Sdílení</h1>
+      <SectionBanner
+        section="tools"
+        title="Sdílení"
+        description="Pozvěte partnera, účetního nebo dozor — každý s vlastním přístupem"
+      />
 
       <Card>
         <CardHeader>

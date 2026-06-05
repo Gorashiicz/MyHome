@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SectionBanner } from "@/components/layout/section-banner";
 import { ClipboardList, Trash2 } from "lucide-react";
 
 export default async function ChecklistsPage({
@@ -29,13 +30,11 @@ export default async function ChecklistsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold">Checklisty</h1>
-        <p className="mt-1 text-sm text-muted">
-          Kontrolní seznamy před kritickými kroky — betonáž, zaklopení rozvodů,
-          platba dodavateli.
-        </p>
-      </div>
+      <SectionBanner
+        section="tasks"
+        title="Checklisty"
+        description="Kontrolní seznamy před betonáží, zaklopením rozvodů a dalšími kritickými kroky"
+      />
 
       {access?.canEdit && (
         <>

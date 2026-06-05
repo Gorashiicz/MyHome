@@ -8,6 +8,7 @@ import { supplierNeedsDetails } from "@/lib/supplier-display";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function SuppliersPage({
   params,
@@ -28,13 +29,11 @@ export default async function SuppliersPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold">Dodavatelé</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Kontakty z výdajů se zde objeví automaticky. Klikněte na jméno a
-          doplňte telefon, IČO nebo poznámku.
-        </p>
-      </div>
+      <SectionBanner
+        section="tools"
+        title="Dodavatelé"
+        description="Kontakty z výdajů se zde objeví automaticky — doplňte telefon, IČO nebo poznámku"
+      />
 
       {access?.canEdit && (
         <Card>

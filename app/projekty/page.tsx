@@ -3,6 +3,7 @@ import { requireUser, getUserProjects } from "@/lib/permissions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeSettingsCard } from "@/components/theme/theme-settings-card";
+import { SectionBanner } from "@/components/layout/section-banner";
 import { labelProjectStatus, labelBudgetMode } from "@/lib/formatting";
 import { signOut } from "@/lib/auth";
 
@@ -11,25 +12,27 @@ export default async function ProjectsPage() {
   const projects = await getUserProjects(user.id);
 
   return (
-    <main className="mx-auto min-h-screen max-w-2xl px-4 py-8">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Moje stavby</h1>
-          <p className="text-sm text-muted">{user.email}</p>
-        </div>
+    <main className="mx-auto min-h-screen max-w-2xl px-4 py-6 md:py-8">
+      <SectionBanner
+        section="projects"
+        title="Moje stavby"
+        description={user.email ?? undefined}
+        className="app-section-banner--inset"
+      >
         <form
           action={async () => {
             "use server";
             await signOut({ redirectTo: "/" });
           }}
+          className="mt-2"
         >
-          <Button type="submit" variant="ghost" size="sm">
+          <Button type="submit" variant="outline" size="sm">
             Odhlásit
           </Button>
         </form>
-      </div>
+      </SectionBanner>
 
-      <Button asChild className="mt-6 w-full">
+      <Button asChild className="mt-2 w-full">
         <Link href="/projekty/nova">+ Nová stavba</Link>
       </Button>
 

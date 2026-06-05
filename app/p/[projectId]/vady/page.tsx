@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function DefectsPage({
   params,
@@ -29,7 +30,11 @@ export default async function DefectsPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">Vady a reklamace</h1>
+      <SectionBanner
+        section="tasks"
+        title="Vady a reklamace"
+        description="Evidence vadných prací a průběh reklamací u dodavatelů"
+      />
 
       {access?.canEdit && (
         <Card>

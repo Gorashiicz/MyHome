@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function TasksPage({
   params,
@@ -33,7 +34,11 @@ export default async function TasksPage({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">Úkoly a termíny</h1>
+      <SectionBanner
+        section="tasks"
+        title="Úkoly a termíny"
+        description="Harmonogram práce a blížící se deadliny"
+      />
       <div className="flex flex-wrap gap-2 text-sm">
         <Link href={`/p/${projectId}/ukoly`}>Vše</Link>
         <Link href={`/p/${projectId}/ukoly?view=upcoming`}>Nadcházející</Link>

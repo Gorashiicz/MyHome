@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHero } from "@/components/layout/section-banner";
 import { APP_NAME } from "@/lib/constants";
 
 const errorMessages: Record<string, string> = {
@@ -21,10 +22,11 @@ export default async function LoginPage({
   const errorMessage = error ? errorMessages[error] ?? "Nepodařilo se přihlásit." : null;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-8">
+    <main className="app-auth-shell min-h-screen pt-4 md:pt-8">
+      <PageHero section="auth" title="Přihlášení" description={APP_NAME} />
       <Card>
         <CardHeader>
-          <CardTitle>Přihlášení — {APP_NAME}</CardTitle>
+          <CardTitle>Váš účet</CardTitle>
         </CardHeader>
         <CardContent>
           {errorMessage && (

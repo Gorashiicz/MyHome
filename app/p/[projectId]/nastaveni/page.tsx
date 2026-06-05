@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionBanner } from "@/components/layout/section-banner";
 
 export default async function SettingsPage({
   params,
@@ -36,7 +37,12 @@ export default async function SettingsPage({
       <Link href={`/p/${projectId}/vice`} className="text-sm text-emerald-700">
         ← Zpět
       </Link>
-      <h1 className="text-xl font-bold">Nastavení stavby</h1>
+      <SectionBanner
+        section="tools"
+        title="Nastavení stavby"
+        description="Název projektu, limit rozpočtu a archivace"
+        compact
+      />
 
       <Card>
         <CardContent className="pt-4">

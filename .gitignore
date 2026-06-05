@@ -39,6 +39,9 @@ scripts/local-db-dump.sql
 # uploaded files
 /uploads
 
+# zdrojové dekorace (optimalizované verze v public/decor)
+/pictures
+
 # vercel
 .vercel
 
