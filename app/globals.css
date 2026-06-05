@@ -320,6 +320,9 @@ body {
 .app-section-hero {
   position: relative;
   overflow: hidden;
+  width: 75%;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: var(--app-radius-xl);
   border: 1px solid var(--app-border);
   box-shadow:
@@ -430,8 +433,8 @@ body {
   padding: 0 1rem 2rem;
 }
 
-.app-auth-shell .app-section-page {
-  margin: 0 -1rem;
+.app-auth-shell .app-section-hero {
+  width: 100%;
 }
 
 .app-auth-shell .app-section-hero {
