@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  addExpenseAttachment,
+  addExpenseAttachmentAction,
   deleteExpenseAttachment,
 } from "@/actions/attachments";
 import type { ExpenseAttachmentItem } from "@/lib/expense-attachments";
@@ -23,24 +23,6 @@ function isImageMime(mime: string) {
   return mime.startsWith("image/");
 }
 
-type UploadState = { error?: string; success?: boolean };
-
-async function uploadAttachment(
-  projectId: string,
-  expenseId: string,
-  _prev: UploadState,
-  formData: FormData
-): Promise<UploadState> {
-  try {
-    await addExpenseAttachment(projectId, expenseId, formData);
-    return { success: true };
-  } catch (e) {
-    return {
-      error: e instanceof Error ? e.message : "Nahrání se nezdařilo.",
-    };
-  }
-}
-
 export function ExpenseAttachments({
   projectId,
   expenseId,
@@ -55,7 +37,7 @@ export function ExpenseAttachments({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [uploadState, uploadAction, uploadPending] = useActionState(
-    uploadAttachment.bind(null, projectId, expenseId),
+    addExpenseAttachmentAction.bind(null, projectId, expenseId),
     {}
   );
 

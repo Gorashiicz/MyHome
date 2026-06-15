@@ -5,6 +5,35 @@ import { prisma } from "@/lib/db";
 import { requireProjectEditor } from "@/lib/permissions";
 import { saveUploadedFile } from "@/lib/storage";
 
+export type AttachmentUploadState = { error?: string; success?: boolean };
+
+export async function addExpenseAttachmentAction(
+  projectId: string,
+  expenseId: string,
+  _prev: AttachmentUploadState,
+  formData: FormData
+): Promise<AttachmentUploadState> {
+  try {
+    await addExpenseAttachment(projectId, expenseId, formData);
+    return { success: true };
+  } catch (e) {
+    return {
+      error: formatAttachmentUploadError(e),
+    };
+  }
+}
+
+function formatAttachmentUploadError(error: unknown): string {
+  if (error instanceof Error) {
+    const msg = error.message;
+    if (/body exceeded|413|too large|max.*body/i.test(msg)) {
+      return "Soubor je příliš velký (max 15 MB).";
+    }
+    return msg;
+  }
+  return "Nahrání se nezdařilo.";
+}
+
 export async function addExpenseAttachment(
   projectId: string,
   expenseId: string,
