@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { createExpense, updateExpense } from "@/actions/expenses";
+import { useActionState, useMemo, useState } from "react";
+import { createExpenseAction, updateExpense } from "@/actions/expenses";
 import {
   BudgetCategoryPicker,
   type BudgetCategoryOption,
@@ -59,6 +59,11 @@ export function ExpenseForm({
   const isEdit = !!expenseId && !!initialValues;
   const today = new Date().toISOString().slice(0, 10);
 
+  const [createState, createAction, createPending] = useActionState(
+    createExpenseAction.bind(null, projectId),
+    {}
+  );
+
   const initialBudgetId = resolveInitialBudgetId(
     budgetOptions,
     initialValues?.categoryId ?? initialCategoryId
@@ -97,7 +102,7 @@ export function ExpenseForm({
 
   const formAction = isEdit
     ? updateExpense.bind(null, projectId, expenseId!)
-    : createExpense.bind(null, projectId);
+    : createAction;
 
   function handleBudgetSelect(id: string) {
     setSelectedBudgetId(id);
@@ -111,6 +116,12 @@ export function ExpenseForm({
 
   return (
     <form action={formAction} encType="multipart/form-data" className="space-y-4">
+      {!isEdit && createState.error && (
+        <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {createState.error}
+        </p>
+      )}
+
       <BudgetCategoryPicker
         options={budgetOptions}
         selectedId={selectedBudgetId}
@@ -268,7 +279,14 @@ export function ExpenseForm({
 
       <input type="hidden" name="currency" value="CZK" />
       <SaveButton
-        label={isEdit ? "Uložit změny" : "Uložit výdaj"}
+        label={
+          isEdit
+            ? "Uložit změny"
+            : createPending
+              ? "Ukládám…"
+              : "Uložit výdaj"
+        }
+        disabled={!isEdit && createPending}
         className="w-full"
       />
     </form>

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireProjectEditor, requireProjectAccess } from "@/lib/permissions";
@@ -11,11 +12,38 @@ import {
   parseSupplierNamesFromFormData,
   syncExpenseSuppliers,
 } from "@/lib/expense-suppliers";
-import { saveUploadedFile } from "@/lib/storage";
+import {
+  attachmentTypeFromMime,
+  formatUploadError,
+  saveUploadedFile,
+} from "@/lib/storage";
 
 function parseTags(tags?: string) {
   if (!tags) return [];
   return tags.split(",").map((t) => t.trim()).filter(Boolean);
+}
+
+function parseExpenseFormData(formData: FormData) {
+  const raw = Object.fromEntries(
+    [...formData.entries()].filter(([, value]) => typeof value === "string")
+  );
+  return expenseSchema.safeParse(raw);
+}
+
+export type ExpenseFormState = { error?: string };
+
+export async function createExpenseAction(
+  projectId: string,
+  _prev: ExpenseFormState,
+  formData: FormData
+): Promise<ExpenseFormState> {
+  try {
+    await createExpense(projectId, formData);
+    return {};
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    return { error: formatUploadError(error) };
+  }
 }
 
 const expenseInclude = {
@@ -30,8 +58,7 @@ const expenseInclude = {
 
 export async function createExpense(projectId: string, formData: FormData) {
   const { user } = await requireProjectEditor(projectId);
-  const raw = Object.fromEntries(formData.entries());
-  const parsed = expenseSchema.safeParse(raw);
+  const parsed = parseExpenseFormData(formData);
   if (!parsed.success) {
     throw new Error(parsed.error.issues[0]?.message ?? "Neplatná data");
   }
@@ -56,24 +83,29 @@ export async function createExpense(projectId: string, formData: FormData) {
     },
   });
 
-  await syncExpenseSuppliers(projectId, expense.id, supplierNames);
+  try {
+    await syncExpenseSuppliers(projectId, expense.id, supplierNames);
 
-  const file = formData.get("attachment") as File | null;
-  if (file && file.size > 0) {
-    const saved = await saveUploadedFile(projectId, file, "invoices");
-    await prisma.attachment.create({
-      data: {
-        projectId,
-        originalName: saved.originalName,
-        storagePath: saved.storagePath,
-        mimeType: saved.mimeType,
-        fileSize: saved.fileSize,
-        type: file.type === "application/pdf" ? "invoice" : "receipt",
-        entityType: "expense",
-        entityId: expense.id,
-        uploadedById: user.id,
-      },
-    });
+    const file = formData.get("attachment") as File | null;
+    if (file && file.size > 0) {
+      const saved = await saveUploadedFile(projectId, file, "invoices");
+      await prisma.attachment.create({
+        data: {
+          projectId,
+          originalName: saved.originalName,
+          storagePath: saved.storagePath,
+          mimeType: saved.mimeType,
+          fileSize: saved.fileSize,
+          type: attachmentTypeFromMime(saved.mimeType),
+          entityType: "expense",
+          entityId: expense.id,
+          uploadedById: user.id,
+        },
+      });
+    }
+  } catch (error) {
+    await prisma.expense.delete({ where: { id: expense.id } });
+    throw error;
   }
 
   revalidatePath(`/p/${projectId}`);
@@ -98,8 +130,7 @@ export async function updateExpense(
   formData: FormData
 ) {
   await requireProjectEditor(projectId);
-  const raw = Object.fromEntries(formData.entries());
-  const parsed = expenseSchema.safeParse(raw);
+  const parsed = parseExpenseFormData(formData);
   if (!parsed.success) {
     throw new Error(parsed.error.issues[0]?.message ?? "Neplatná data");
   }

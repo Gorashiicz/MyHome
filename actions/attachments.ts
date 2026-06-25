@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { requireProjectEditor } from "@/lib/permissions";
-import { saveUploadedFile } from "@/lib/storage";
+import { saveUploadedFile, attachmentTypeFromMime, formatUploadError } from "@/lib/storage";
 
 export type AttachmentUploadState = { error?: string; success?: boolean };
 
@@ -24,14 +24,7 @@ export async function addExpenseAttachmentAction(
 }
 
 function formatAttachmentUploadError(error: unknown): string {
-  if (error instanceof Error) {
-    const msg = error.message;
-    if (/body exceeded|413|too large|max.*body/i.test(msg)) {
-      return "Soubor je příliš velký (max 15 MB).";
-    }
-    return msg;
-  }
-  return "Nahrání se nezdařilo.";
+  return formatUploadError(error);
 }
 
 export async function addExpenseAttachment(
@@ -60,7 +53,7 @@ export async function addExpenseAttachment(
       storagePath: saved.storagePath,
       mimeType: saved.mimeType,
       fileSize: saved.fileSize,
-      type: file.type === "application/pdf" ? "invoice" : "receipt",
+      type: attachmentTypeFromMime(saved.mimeType),
       entityType: "expense",
       entityId: expenseId,
       uploadedById: user.id,
