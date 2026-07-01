@@ -1,9 +1,9 @@
 import {
   createDiaryEntry,
   deleteDiaryEntry,
-  updateDiaryMetadata,
 } from "@/actions/diary";
 import { DiaryEntryForm, diaryEntryToCopyDefaults } from "@/components/forms/diary-entry-form";
+import { DiaryMetadataPanel } from "@/components/diary/diary-metadata-panel";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { prisma } from "@/lib/db";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
@@ -15,32 +15,8 @@ import {
 import { DIARY_DISCLAIMER } from "@/lib/constants";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { SaveButton } from "@/components/ui/save-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SectionPage } from "@/components/layout/section-banner";
-
-const META_FIELDS: { name: keyof ReturnType<typeof diaryMetadataToFormDefaults>; label: string; rows?: number }[] = [
-  { name: "permitName", label: "Název stavby dle povolení" },
-  { name: "permitNumber", label: "Číslo jednací / stavebního povolení" },
-  { name: "permitDate", label: "Datum vydání povolení" },
-  { name: "siteAddress", label: "Místo stavby" },
-  { name: "builderName", label: "Stavebník (investor)" },
-  { name: "builderAddress", label: "Adresa stavebníka" },
-  { name: "contractorName", label: "Zhotovitel" },
-  { name: "contractorAddress", label: "Adresa zhotovitele" },
-  { name: "designerName", label: "Projektant" },
-  { name: "designerAddress", label: "Adresa projektanta" },
-  { name: "subcontractors", label: "Poddodavatelé", rows: 2 },
-  { name: "siteManagement", label: "Stavbyvedoucí / odborné vedení", rows: 2 },
-  { name: "technicalSupervision", label: "Technický a autorský dozor", rows: 2 },
-  { name: "authorizedRecorders", label: "Osoby oprávněné k záznamům", rows: 2 },
-  { name: "projectDocumentation", label: "Projektová dokumentace", rows: 2 },
-  { name: "buildingDocuments", label: "Dokumenty ke stavbě (povolení, smlouvy…)", rows: 2 },
-  { name: "personChanges", label: "Změny odpovědných osob", rows: 2 },
-];
 
 export default async function DiaryPage({
   params,
@@ -103,54 +79,6 @@ export default async function DiaryPage({
         {DIARY_DISCLAIMER}
       </p>
 
-      {isOwner && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">
-              Identifikační údaje pro export (příloha č. 12)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form
-              action={updateDiaryMetadata.bind(null, projectId)}
-              className="grid gap-3 sm:grid-cols-2"
-            >
-              {META_FIELDS.map((f) => (
-                <div
-                  key={f.name}
-                  className={f.rows ? "sm:col-span-2" : undefined}
-                >
-                  <Label htmlFor={f.name}>{f.label}</Label>
-                  {f.rows ? (
-                    <Textarea
-                      id={f.name}
-                      name={f.name}
-                      rows={f.rows}
-                      defaultValue={metaDefaults[f.name]}
-                      className="mt-1"
-                    />
-                  ) : (
-                    <Input
-                      id={f.name}
-                      name={f.name}
-                      defaultValue={metaDefaults[f.name]}
-                      className="mt-1"
-                    />
-                  )}
-                </div>
-              ))}
-              <div className="sm:col-span-2">
-                <SaveButton
-                  size="default"
-                  label="Uložit údaje pro export"
-                  className="w-full sm:w-auto"
-                />
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-
       {access?.canEdit && (
         <Card id="novy-zaznam">
           <CardHeader className="pb-2">
@@ -162,14 +90,18 @@ export default async function DiaryPage({
             {copySource && (
               <p className="mb-3 rounded-lg bg-primary-soft px-3 py-2 text-sm text-primary">
                 Obsah zkopírován ze záznamu{" "}
-                <strong>{formatDate(copySource.entryDate)} — {copySource.title}</strong>.
-                Upravte datum (navrženo další pracovní den) a uložte.
+                <strong>
+                  {formatDate(copySource.entryDate)} — {copySource.title}
+                </strong>
+                . Upravte datum (navrženo další pracovní den) a uložte.
               </p>
             )}
             <DiaryEntryForm
               formAction={createDiaryEntry.bind(null, projectId)}
               defaultValues={newEntryDefaults}
-              submitLabel={copySource ? "Uložit kopii jako nový záznam" : "Uložit záznam"}
+              submitLabel={
+                copySource ? "Uložit kopii jako nový záznam" : "Uložit záznam"
+              }
             />
           </CardContent>
         </Card>
@@ -184,13 +116,18 @@ export default async function DiaryPage({
             </p>
           )}
           {entries.map((e) => (
-            <li key={e.id} className="rounded-lg border bg-white px-3 py-3 text-sm">
+            <li
+              key={e.id}
+              className="rounded-lg border bg-white px-3 py-3 text-sm"
+            >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <p className="font-semibold">
                   {formatDate(e.entryDate)} — {e.title}
                 </p>
                 {e.createdBy.name && (
-                  <span className="text-xs text-slate-500">{e.createdBy.name}</span>
+                  <span className="text-xs text-slate-500">
+                    {e.createdBy.name}
+                  </span>
                 )}
               </div>
               {e.weather && (
@@ -226,6 +163,10 @@ export default async function DiaryPage({
           ))}
         </ul>
       </section>
+
+      {isOwner && (
+        <DiaryMetadataPanel projectId={projectId} defaults={metaDefaults} />
+      )}
     </SectionPage>
   );
 }
