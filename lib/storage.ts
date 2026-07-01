@@ -47,6 +47,26 @@ export function formatUploadError(error: unknown): string {
     if (/body exceeded|413|too large|max.*body/i.test(msg)) {
       return "Soubor je příliš velký (max 15 MB).";
     }
+    if (/fetch failed|enotfound|econnrefused|etimedout|network/i.test(msg)) {
+      return (
+        "Server se nemůže spojit se Supabase úložištěm. " +
+        "Ve Vercelu zkontrolujte SUPABASE_URL (musí být https://váš-projekt.supabase.co bez uvozovek) " +
+        "a SUPABASE_SERVICE_ROLE_KEY (legacy service_role začíná eyJ…). " +
+        "V Supabase Dashboard ověřte, že projekt není pozastavený, pak spusťte: node scripts/setup-supabase-bucket.mjs"
+      );
+    }
+    if (/invalid compact jws|jwt|unauthorized|invalid api key/i.test(msg)) {
+      return (
+        "Neplatný Supabase klíč. Ve Vercelu použijte SUPABASE_SERVICE_ROLE_KEY " +
+        "(Settings → API → Legacy → service_role), ne anon key."
+      );
+    }
+    if (/bucket not found|not found/i.test(msg)) {
+      return (
+        "Bucket pro soubory neexistuje. Spusťte lokálně: node scripts/setup-supabase-bucket.mjs " +
+        "a ve Vercelu nastavte SUPABASE_STORAGE_BUCKET=stavba-uploads."
+      );
+    }
     return msg;
   }
   return "Nahrání se nezdařilo.";

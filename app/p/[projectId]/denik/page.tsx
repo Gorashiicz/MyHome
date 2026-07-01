@@ -3,6 +3,7 @@ import {
   deleteDiaryEntry,
   updateDiaryMetadata,
 } from "@/actions/diary";
+import { DiaryEntryForm } from "@/components/forms/diary-entry-form";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { prisma } from "@/lib/db";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
@@ -12,6 +13,7 @@ import {
   parseDiaryMetadata,
 } from "@/lib/diary-metadata";
 import { DIARY_DISCLAIMER } from "@/lib/constants";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SaveButton } from "@/components/ui/save-button";
 import { Input } from "@/components/ui/input";
@@ -141,93 +143,10 @@ export default async function DiaryPage({
             <CardTitle className="text-base">Nový denní záznam</CardTitle>
           </CardHeader>
           <CardContent>
-            <form
-              action={createDiaryEntry.bind(null, projectId)}
-              className="grid gap-3 sm:grid-cols-2"
-            >
-              <div>
-                <Label htmlFor="entryDate">Datum *</Label>
-                <Input
-                  id="entryDate"
-                  name="entryDate"
-                  type="date"
-                  required
-                  defaultValue={today}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="title">Nadpis záznamu *</Label>
-                <Input
-                  id="title"
-                  name="title"
-                  required
-                  placeholder="Denní záznam"
-                  defaultValue="Denní záznam"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="weather">Počasí / teplota</Label>
-                <Input
-                  id="weather"
-                  name="weather"
-                  placeholder="Slunečno, +12 °C"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="siteCondition">Stav staveniště</Label>
-                <Input
-                  id="siteCondition"
-                  name="siteCondition"
-                  placeholder="Sucho, přístupné…"
-                  className="mt-1"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="peoplePresent">Osoby na staveništi</Label>
-                <Input id="peoplePresent" name="peoplePresent" className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="workPerformed">Prováděné práce</Label>
-                <Textarea id="workPerformed" name="workPerformed" rows={3} className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="materialsDelivered">Dodávky materiálu / zabudování</Label>
-                <Textarea id="materialsDelivered" name="materialsDelivered" rows={2} className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="machinesEquipment">Mechanizace</Label>
-                <Textarea id="machinesEquipment" name="machinesEquipment" rows={2} className="mt-1" />
-              </div>
-              <div>
-                <Label htmlFor="dustMeasures">Opatření proti prašnosti</Label>
-                <Input id="dustMeasures" name="dustMeasures" className="mt-1" />
-              </div>
-              <div>
-                <Label htmlFor="accessibilityMeasures">Přístupnost staveniště</Label>
-                <Input id="accessibilityMeasures" name="accessibilityMeasures" className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="problems">Problémy / mimořádné události</Label>
-                <Textarea id="problems" name="problems" rows={2} className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="decisions">Rozhodnutí / dohody</Label>
-                <Textarea id="decisions" name="decisions" rows={2} className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <Label htmlFor="notes">Další poznámky</Label>
-                <Textarea id="notes" name="notes" rows={2} className="mt-1" />
-              </div>
-              <div className="sm:col-span-2">
-                <SaveButton
-                  label="Uložit záznam"
-                  className="w-full sm:w-auto"
-                />
-              </div>
-            </form>
+            <DiaryEntryForm
+              formAction={createDiaryEntry.bind(null, projectId)}
+              defaultValues={{ entryDate: today }}
+            />
           </CardContent>
         </Card>
       )}
@@ -259,14 +178,18 @@ export default async function DiaryPage({
                 </p>
               )}
               {access?.canEdit && (
-                <form
-                  action={deleteDiaryEntry.bind(null, projectId, e.id)}
-                  className="mt-2"
-                >
-                  <Button type="submit" variant="ghost" size="sm">
-                    Smazat
+                <div className="mt-2 flex flex-wrap gap-1">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/p/${projectId}/denik/${e.id}/upravit`}>
+                      Upravit
+                    </Link>
                   </Button>
-                </form>
+                  <form action={deleteDiaryEntry.bind(null, projectId, e.id)}>
+                    <Button type="submit" variant="ghost" size="sm">
+                      Smazat
+                    </Button>
+                  </form>
+                </div>
               )}
             </li>
           ))}

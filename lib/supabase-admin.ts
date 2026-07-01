@@ -2,6 +2,14 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let client: SupabaseClient | null = null;
 
+function normalizeSupabaseUrl(url: string) {
+  return url.trim().replace(/\/+$/, "");
+}
+
+function normalizeSupabaseKey(key: string) {
+  return key.trim().replace(/^["']|["']$/g, "");
+}
+
 export function isCloudStorageEnabled() {
   return Boolean(
     process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -22,8 +30,12 @@ export function getStorageBucketName() {
 }
 
 export function getSupabaseAdmin() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.SUPABASE_URL
+    ? normalizeSupabaseUrl(process.env.SUPABASE_URL)
+    : "";
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? normalizeSupabaseKey(process.env.SUPABASE_SERVICE_ROLE_KEY)
+    : "";
   if (!url || !key) {
     throw new Error(
       "Supabase není nakonfigurován (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)."

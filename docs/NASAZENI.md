@@ -153,9 +153,12 @@ Pro lokální vývoj **nemusíte** mít Supabase — funguje disk. Pro test clou
 **Chyba při přihlášení / session**  
 → Zkontrolujte `AUTH_URL` (musí přesně odpovídat URL v prohlížeči, včetně `https://`)
 
-**Upload souboru selže**  
+**Upload souboru selže (`fetch failed`)**  
+→ Supabase projekt neexistuje, je pozastavený, nebo je špatná `SUPABASE_URL` ve Vercelu  
+→ Ověřte v Supabase Dashboard, že projekt běží (Restore project)  
+→ Lokálně s `.env`: `npm run verify:supabase-storage`  
 → Bucket vytvořen? `node scripts/setup-supabase-bucket.mjs`  
-→ `SUPABASE_SERVICE_ROLE_KEY` je service_role, ne anon key
+→ `SUPABASE_SERVICE_ROLE_KEY` je legacy service_role (`eyJ…`), ne anon key
 
 **Prisma / DB chyba**  
 → `DATABASE_URL` musí být Neon pooled string s `?sslmode=require`  
