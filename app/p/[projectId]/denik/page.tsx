@@ -173,7 +173,7 @@ export default async function DiaryPage({
                 <p className="mt-1 text-slate-600">Počasí: {e.weather}</p>
               )}
               {e.workPerformed && (
-                <p className="mt-1 whitespace-pre-wrap text-slate-700 line-clamp-3">
+                <p className="mt-1 whitespace-pre-wrap text-slate-700">
                   {e.workPerformed}
                 </p>
               )}
