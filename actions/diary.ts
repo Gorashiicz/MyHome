@@ -41,6 +41,7 @@ export async function createDiaryEntry(projectId: string, formData: FormData) {
   });
 
   revalidatePath(`/p/${projectId}/denik`);
+  redirect(`/p/${projectId}/denik`);
 }
 
 export async function getDiaryEntry(projectId: string, entryId: string) {

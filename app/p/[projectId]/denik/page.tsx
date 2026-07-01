@@ -3,7 +3,7 @@ import {
   deleteDiaryEntry,
   updateDiaryMetadata,
 } from "@/actions/diary";
-import { DiaryEntryForm } from "@/components/forms/diary-entry-form";
+import { DiaryEntryForm, diaryEntryToCopyDefaults } from "@/components/forms/diary-entry-form";
 import { resolveProjectRoute } from "@/lib/project-context";
 import { prisma } from "@/lib/db";
 import { getProjectAccess, requireUser } from "@/lib/permissions";
@@ -44,10 +44,13 @@ const META_FIELDS: { name: keyof ReturnType<typeof diaryMetadataToFormDefaults>;
 
 export default async function DiaryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ projectId: string }>;
+  searchParams: Promise<{ copyFrom?: string }>;
 }) {
   const { projectId } = await params;
+  const { copyFrom } = await searchParams;
   await resolveProjectRoute(projectId);
   const user = await requireUser();
   const access = await getProjectAccess(projectId, user.id);
@@ -71,6 +74,17 @@ export default async function DiaryPage({
   });
   const metaDefaults = diaryMetadataToFormDefaults(meta);
   const today = new Date().toISOString().slice(0, 10);
+
+  const copySource =
+    copyFrom && access?.canEdit
+      ? await prisma.diaryEntry.findFirst({
+          where: { id: copyFrom, projectId },
+        })
+      : null;
+
+  const newEntryDefaults = copySource
+    ? diaryEntryToCopyDefaults(copySource)
+    : { entryDate: today };
 
   return (
     <SectionPage
@@ -138,14 +152,24 @@ export default async function DiaryPage({
       )}
 
       {access?.canEdit && (
-        <Card>
+        <Card id="novy-zaznam">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base">Nový denní záznam</CardTitle>
+            <CardTitle className="text-base">
+              {copySource ? "Nový záznam (zkopírováno)" : "Nový denní záznam"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
+            {copySource && (
+              <p className="mb-3 rounded-lg bg-primary-soft px-3 py-2 text-sm text-primary">
+                Obsah zkopírován ze záznamu{" "}
+                <strong>{formatDate(copySource.entryDate)} — {copySource.title}</strong>.
+                Upravte datum (navrženo další pracovní den) a uložte.
+              </p>
+            )}
             <DiaryEntryForm
               formAction={createDiaryEntry.bind(null, projectId)}
-              defaultValues={{ entryDate: today }}
+              defaultValues={newEntryDefaults}
+              submitLabel={copySource ? "Uložit kopii jako nový záznam" : "Uložit záznam"}
             />
           </CardContent>
         </Card>
@@ -179,6 +203,13 @@ export default async function DiaryPage({
               )}
               {access?.canEdit && (
                 <div className="mt-2 flex flex-wrap gap-1">
+                  <Button asChild variant="outline" size="sm">
+                    <Link
+                      href={`/p/${projectId}/denik?copyFrom=${e.id}#novy-zaznam`}
+                    >
+                      Kopírovat
+                    </Link>
+                  </Button>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/p/${projectId}/denik/${e.id}/upravit`}>
                       Upravit

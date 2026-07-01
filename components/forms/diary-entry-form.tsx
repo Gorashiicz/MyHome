@@ -51,6 +51,30 @@ export function diaryEntryToFormValues(entry: {
   };
 }
 
+export function diaryEntryToCopyDefaults(entry: {
+  entryDate: Date;
+  title: string;
+  weather: string | null;
+  siteCondition: string | null;
+  peoplePresent: string | null;
+  workPerformed: string | null;
+  machinesEquipment: string | null;
+  materialsDelivered: string | null;
+  dustMeasures: string | null;
+  accessibilityMeasures: string | null;
+  problems: string | null;
+  decisions: string | null;
+  notes: string | null;
+}): DiaryEntryFormValues {
+  const base = diaryEntryToFormValues(entry);
+  const nextDay = new Date(entry.entryDate);
+  nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+  return {
+    ...base,
+    entryDate: nextDay.toISOString().slice(0, 10),
+  };
+}
+
 export function DiaryEntryForm({
   formAction,
   defaultValues,
