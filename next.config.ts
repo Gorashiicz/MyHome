@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   serverActions: {
     bodySizeLimit: UPLOAD_BODY_LIMIT,
   },
+  serverExternalPackages: ["pdfkit"],
+  outputFileTracingIncludes: {
+    "/api/export/denik": [
+      "./assets/fonts/**/*",
+      "./node_modules/dejavu-fonts-ttf/ttf/*.ttf",
+    ],
+  },
 };
 
 export default nextConfig;

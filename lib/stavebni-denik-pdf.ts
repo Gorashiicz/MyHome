@@ -1,18 +1,9 @@
-import path from "path";
 import PDFDocument from "pdfkit";
 import type PDFKit from "pdfkit";
 import type { DiaryEntry, Project, User } from "@prisma/client";
 import { formatDate } from "@/lib/formatting";
 import { DiaryMetadata, parseDiaryMetadata } from "@/lib/diary-metadata";
-
-const FONT_REGULAR = path.join(
-  process.cwd(),
-  "node_modules/dejavu-fonts-ttf/ttf/DejaVuSans.ttf"
-);
-const FONT_BOLD = path.join(
-  process.cwd(),
-  "node_modules/dejavu-fonts-ttf/ttf/DejaVuSans-Bold.ttf"
-);
+import { getPdfFontPaths } from "@/lib/pdf-fonts";
 
 type EntryWithAuthor = DiaryEntry & {
   createdBy: Pick<User, "name" | "email">;
@@ -77,6 +68,14 @@ function sectionTitle(doc: PDFKit.PDFDocument, title: string) {
 
 export function buildStavebniDenikPdf(input: ExportInput): Promise<Buffer> {
   return new Promise((resolve, reject) => {
+    let fonts: ReturnType<typeof getPdfFontPaths>;
+    try {
+      fonts = getPdfFontPaths();
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
     const doc = new PDFDocument({
       size: "A4",
       margin: 48,
@@ -93,8 +92,8 @@ export function buildStavebniDenikPdf(input: ExportInput): Promise<Buffer> {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    doc.registerFont("Regular", FONT_REGULAR);
-    doc.registerFont("Bold", FONT_BOLD);
+    doc.registerFont("Regular", fonts.regular);
+    doc.registerFont("Bold", fonts.bold);
 
     const meta = parseDiaryMetadata(input.project.diaryMetadata, {
       ...input.project,

@@ -51,7 +51,8 @@ export async function GET(req: Request) {
       },
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Neznámá chyba";
     console.error("Diary PDF export failed:", error);
-    return new NextResponse("Export selhal", { status: 500 });
+    return new NextResponse(`Export selhal: ${message}`, { status: 500 });
   }
 }
