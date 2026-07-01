@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/export/denik": [
       "./assets/fonts/**/*",
+      "./assets/diary/**/*",
       "./node_modules/dejavu-fonts-ttf/ttf/*.ttf",
     ],
   },

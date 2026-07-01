@@ -3,7 +3,7 @@ import type PDFKit from "pdfkit";
 import type { DiaryEntry, Project, User } from "@prisma/client";
 import { formatDate } from "@/lib/formatting";
 import { DiaryMetadata, parseDiaryMetadata } from "@/lib/diary-metadata";
-import { getPdfFontPaths } from "@/lib/pdf-fonts";
+import { getDiaryCoverImagePath, getPdfFontPaths } from "@/lib/pdf-fonts";
 
 type EntryWithAuthor = DiaryEntry & {
   createdBy: Pick<User, "name" | "email">;
@@ -66,6 +66,15 @@ function sectionTitle(doc: PDFKit.PDFDocument, title: string) {
   doc.moveDown(0.6);
 }
 
+function addDiaryCoverPage(doc: PDFKit.PDFDocument, coverPath: string) {
+  doc.image(coverPath, 0, 0, {
+    width: doc.page.width,
+    height: doc.page.height,
+  });
+}
+
+const CONTENT_MARGIN = 48;
+
 export function buildStavebniDenikPdf(input: ExportInput): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     let fonts: ReturnType<typeof getPdfFontPaths>;
@@ -78,7 +87,7 @@ export function buildStavebniDenikPdf(input: ExportInput): Promise<Buffer> {
 
     const doc = new PDFDocument({
       size: "A4",
-      margin: 48,
+      margin: CONTENT_MARGIN,
       bufferPages: true,
       info: {
         Title: `Stavební deník — ${input.project.name}`,
@@ -100,7 +109,13 @@ export function buildStavebniDenikPdf(input: ExportInput): Promise<Buffer> {
       owner: input.project.owner,
     });
 
-    // Titulní strana
+    const coverPath = getDiaryCoverImagePath();
+    if (coverPath) {
+      addDiaryCoverPage(doc, coverPath);
+      doc.addPage();
+    }
+
+    // Úvodní strana s údaji o stavbě
     doc.font("Bold").fontSize(20).text("STAVEBNÍ DENÍK", { align: "center" });
     doc.moveDown(0.3);
     doc
@@ -303,17 +318,22 @@ export function buildStavebniDenikPdf(input: ExportInput): Promise<Buffer> {
       doc.fillColor("#000000");
     }
 
-    // Číslování stran
+    // Číslování stran (obálka bez čísla)
     const range = doc.bufferedPageRange();
-    for (let i = range.start; i < range.start + range.count; i++) {
+    const coverOffset = coverPath ? 1 : 0;
+    const numberedPages = range.count - coverOffset;
+    for (let i = range.start + coverOffset; i < range.start + range.count; i++) {
       doc.switchToPage(i);
       doc
         .font("Regular")
         .fontSize(8)
         .fillColor("#888888")
-        .text(`Strana ${i + 1} / ${range.count}`, 0, doc.page.height - 36, {
-          align: "center",
-        });
+        .text(
+          `Strana ${i + 1 - coverOffset} / ${numberedPages}`,
+          0,
+          doc.page.height - 36,
+          { align: "center" }
+        );
     }
 
     doc.end();
