@@ -17,6 +17,8 @@ import {
   formatUploadError,
   saveUploadedFile,
 } from "@/lib/storage";
+import { paymentStatusForCategory } from "@/lib/expense-payment";
+import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 
 function parseTags(tags?: string) {
   if (!tags) return [];
@@ -65,6 +67,17 @@ export async function createExpense(projectId: string, formData: FormData) {
   const d = parsed.data;
   const supplierNames = parseSupplierNamesFromFormData(formData);
 
+  const category = d.categoryId
+    ? await prisma.budgetCategory.findFirst({
+        where: { id: d.categoryId, projectId },
+        select: { name: true },
+      })
+    : null;
+  const paymentStatus = paymentStatusForCategory(
+    d.paymentStatus,
+    category?.name
+  );
+
   const expense = await prisma.expense.create({
     data: {
       projectId,
@@ -73,7 +86,7 @@ export async function createExpense(projectId: string, formData: FormData) {
       currency: d.currency,
       expenseDate: new Date(d.expenseDate),
       dueDate: d.dueDate ? new Date(d.dueDate) : null,
-      paymentStatus: d.paymentStatus,
+      paymentStatus,
       categoryId: d.categoryId || null,
       stage: d.stage || null,
       supplierId: null,
@@ -137,6 +150,17 @@ export async function updateExpense(
   const d = parsed.data;
   const supplierNames = parseSupplierNamesFromFormData(formData);
 
+  const category = d.categoryId
+    ? await prisma.budgetCategory.findFirst({
+        where: { id: d.categoryId, projectId },
+        select: { name: true },
+      })
+    : null;
+  const paymentStatus = paymentStatusForCategory(
+    d.paymentStatus,
+    category?.name
+  );
+
   await prisma.expense.update({
     where: { id: expenseId, projectId },
     data: {
@@ -145,7 +169,7 @@ export async function updateExpense(
       currency: d.currency,
       expenseDate: new Date(d.expenseDate),
       dueDate: d.dueDate ? new Date(d.dueDate) : null,
-      paymentStatus: d.paymentStatus,
+      paymentStatus,
       categoryId: d.categoryId || null,
       stage: d.stage || null,
       note: d.note || null,
@@ -196,8 +220,31 @@ export async function getExpenses(
     ];
   }
   if (filters?.categoryId) where.categoryId = filters.categoryId;
-  if (filters?.paymentStatus)
+  if (filters?.paymentStatus === "pending") {
+    // Nerealizované jen u běžných položek — Ostatní se vždy počítá do nákladů.
+    const otherCategories = await prisma.budgetCategory.findMany({
+      where: { projectId },
+      select: { id: true, name: true },
+    });
+    const otherIds = otherCategories
+      .filter((c) => isOtherBudgetCategory(c.name))
+      .map((c) => c.id);
+    where.paymentStatus = { in: ["planned", "ordered"] };
+    if (otherIds.length > 0) {
+      where.AND = [
+        ...(Array.isArray(where.AND)
+          ? where.AND
+          : where.AND
+            ? [where.AND]
+            : []),
+        {
+          OR: [{ categoryId: null }, { categoryId: { notIn: otherIds } }],
+        },
+      ];
+    }
+  } else if (filters?.paymentStatus) {
     where.paymentStatus = filters.paymentStatus as never;
+  }
   if (filters?.supplierId) {
     where.AND = [
       ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),

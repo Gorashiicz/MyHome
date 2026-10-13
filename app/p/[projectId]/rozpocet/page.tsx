@@ -27,6 +27,8 @@ export default async function BudgetPage({
     totalSpent: data.totalSpent,
     remaining: data.remaining,
     overrun: data.overrun,
+    pendingAmount: data.pendingAmount,
+    pendingCount: data.unpaidCount,
   });
 
   return (
@@ -50,7 +52,7 @@ export default async function BudgetPage({
         {BUDGET_REFERENCE_INTRO}
       </p>
 
-      <BudgetSummaryBar summary={summary} />
+      <BudgetSummaryBar summary={summary} projectId={projectId} />
 
       {access?.canEdit && (
         <p className="text-xs text-slate-500">

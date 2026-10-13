@@ -5,9 +5,14 @@ import { getProjectAccess, requireUser } from "@/lib/permissions";
 import {
   formatCzk,
   formatDate,
+  labelPaymentStatus,
   toNumber,
 } from "@/lib/formatting";
 import { BUDGET_LABELS } from "@/lib/budget-labels";
+import {
+  expenseCountsTowardSpent,
+  expenseIsUnrealizedReminder,
+} from "@/lib/expense-payment";
 import { expenseListTitle, expenseListPreview, expenseListMeta } from "@/lib/expense-display";
 import { CategoryBudgetSummary } from "@/components/budget/category-budget-summary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { SaveButton } from "@/components/ui/save-button";
 import { Badge } from "@/components/ui/badge";
 import { CategoryDeleteButton } from "@/components/budget/category-delete-button";
-import { PaymentStatus } from "@prisma/client";
+import { cn } from "@/lib/utils";
 
 export default async function CategoryDetailPage({
   params,
@@ -28,14 +33,17 @@ export default async function CategoryDetailPage({
   const access = await getProjectAccess(projectId, user.id);
   const { category, expenses } = await getCategoryDetail(projectId, categoryId);
 
-  const paidStatuses: PaymentStatus[] = [
-    PaymentStatus.paid,
-    PaymentStatus.partially_paid,
-  ];
   const planned = toNumber(category.plannedAmount);
   const spent = expenses
-    .filter((e) => paidStatuses.includes(e.paymentStatus))
+    .filter((e) => expenseCountsTowardSpent(e.paymentStatus, category.name))
     .reduce((sum, e) => sum + toNumber(e.amount), 0);
+  const pendingExpenses = expenses.filter((e) =>
+    expenseIsUnrealizedReminder(e.paymentStatus, category.name)
+  );
+  const pending = pendingExpenses.reduce(
+    (sum, e) => sum + toNumber(e.amount),
+    0
+  );
   const isClosed = !!category.closedAt;
   const canDelete = expenses.length === 0;
 
@@ -72,7 +80,12 @@ export default async function CategoryDetailPage({
           )}
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <CategoryBudgetSummary planned={planned} spent={spent} />
+          <CategoryBudgetSummary
+            planned={planned}
+            spent={spent}
+            pending={pending}
+            pendingCount={pendingExpenses.length}
+          />
 
           {category.note && (
             <div className="rounded-lg bg-slate-50 p-3">
@@ -136,14 +149,30 @@ export default async function CategoryDetailPage({
             {expenses.map((e) => {
               const preview = expenseListPreview(e);
               const meta = expenseListMeta(e);
+              const isPending = expenseIsUnrealizedReminder(
+                e.paymentStatus,
+                category.name
+              );
               return (
                 <li key={e.id}>
                   <Link
                     href={`/p/${projectId}/rozpocet/vydaje/${e.id}`}
-                    className="block rounded-lg border border-slate-200 bg-white px-3 py-3 transition hover:border-emerald-300"
+                    className={cn(
+                      "block rounded-lg border bg-white px-3 py-3 transition",
+                      isPending
+                        ? "border-amber-200 hover:border-amber-400"
+                        : "border-slate-200 hover:border-emerald-300"
+                    )}
                   >
                     <div className="flex justify-between gap-2">
-                      <span className="font-medium">{expenseListTitle(e)}</span>
+                      <span className="flex min-w-0 items-center gap-2 font-medium">
+                        <span className="truncate">{expenseListTitle(e)}</span>
+                        {isPending && (
+                          <Badge variant="warning" className="shrink-0">
+                            {BUDGET_LABELS.pendingBadge}
+                          </Badge>
+                        )}
+                      </span>
                       <span className="shrink-0 font-semibold">
                         {formatCzk(e.amount)}
                       </span>
@@ -154,6 +183,7 @@ export default async function CategoryDetailPage({
                     <p className="mt-1 text-xs text-slate-500">
                       {formatDate(e.expenseDate)}
                       {meta && ` · ${meta}`}
+                      {` · ${labelPaymentStatus(e.paymentStatus)}`}
                     </p>
                   </Link>
                 </li>

@@ -80,9 +80,13 @@ export function ExpenseForm({
   const [expenseDate, setExpenseDate] = useState(
     initialValues?.expenseDate ?? today
   );
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(
-    initialValues?.paymentStatus ?? "paid"
-  );
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(() => {
+    const initial = initialValues?.paymentStatus ?? "paid";
+    if (initialOption && isOtherBudgetCategory(initialOption.name)) {
+      return "paid";
+    }
+    return initial;
+  });
   const [stage, setStage] = useState(initialOption?.name ?? "");
   const [note, setNote] = useState(initialValues?.note ?? "");
   const [supplierNames, setSupplierNames] = useState<string[]>(
@@ -111,7 +115,12 @@ export function ExpenseForm({
       setNote("");
     }
     const opt = budgetOptions.find((o) => o.id === id);
-    if (opt) setStage(opt.name);
+    if (opt) {
+      setStage(opt.name);
+      if (isOtherBudgetCategory(opt.name)) {
+        setPaymentStatus("paid");
+      }
+    }
   }
 
   return (
@@ -132,9 +141,9 @@ export function ExpenseForm({
         <div className="rounded-md app-info-box">
           {isOther ? (
             <p>
-              Výdaj se započítá do položky <strong>{selectedOption.name}</strong>
-              . Použijte ji pro náklady, které nepatří do konkrétní položky
-              rozpočtu.
+              Výdaj do položky <strong>{selectedOption.name}</strong> se{" "}
+              <strong>ihned odečte od celkových nákladů</strong>. Použijte ji pro
+              náklady, které nepatří do konkrétní položky rozpočtu.
             </p>
           ) : (
             <>
@@ -220,21 +229,55 @@ export function ExpenseForm({
 
       <div>
         <Label htmlFor="paymentStatus">Stav platby</Label>
-        <Select
-          id="paymentStatus"
-          name="paymentStatus"
-          value={paymentStatus}
-          onChange={(e) =>
-            setPaymentStatus(e.target.value as PaymentStatus)
-          }
-          className="mt-1"
-        >
-          <option value="planned">Plánováno</option>
-          <option value="ordered">Objednáno</option>
-          <option value="paid">Zaplaceno</option>
-          <option value="partially_paid">Částečně zaplaceno</option>
-          <option value="cancelled">Zrušeno</option>
-        </Select>
+        {isOther ? (
+          <>
+            <input type="hidden" name="paymentStatus" value="paid" />
+            <Select
+              id="paymentStatus"
+              value="paid"
+              disabled
+              className="mt-1"
+            >
+              <option value="paid">Zaplaceno (odečítá se hned)</option>
+            </Select>
+            <p className="mt-1.5 text-xs text-slate-500">
+              U položky Ostatní se výdaj vždy započítá do nákladů ihned — není
+              potřeba nic odškrtávat jako vyřešené.
+            </p>
+          </>
+        ) : (
+          <>
+            <Select
+              id="paymentStatus"
+              name="paymentStatus"
+              value={paymentStatus}
+              onChange={(e) =>
+                setPaymentStatus(e.target.value as PaymentStatus)
+              }
+              className="mt-1"
+            >
+              <option value="planned">Plánováno</option>
+              <option value="ordered">Objednáno</option>
+              <option value="paid">Zaplaceno</option>
+              <option value="partially_paid">Částečně zaplaceno</option>
+              <option value="cancelled">Zrušeno</option>
+            </Select>
+            {(paymentStatus === "planned" || paymentStatus === "ordered") && (
+              <p className="mt-1.5 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs text-amber-950">
+                Výdaj se rozepíše a zůstane viditelný jako připravený, ale{" "}
+                <strong>neodečte se od rozpočtu</strong>, dokud ho neoznačíte
+                jako zaplacený.
+              </p>
+            )}
+            {(paymentStatus === "paid" ||
+              paymentStatus === "partially_paid") && (
+              <p className="mt-1.5 text-xs text-slate-500">
+                Zaplacený výdaj se započítá do skutečných nákladů a sníží
+                zbývající částku u položky rozpočtu.
+              </p>
+            )}
+          </>
+        )}
       </div>
 
       <input type="hidden" name="categoryId" value={selectedBudgetId} />

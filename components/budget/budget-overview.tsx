@@ -16,6 +16,8 @@ type Row = {
   planned: number;
   spent: number;
   expenseCount: number;
+  pending?: number;
+  pendingCount?: number;
   difference: number;
   percentUsed: number;
   closedAt: Date | null;
@@ -78,6 +80,7 @@ function BudgetCategoryRow({
   const isClosed = !!cat.closedAt;
   const canDelete = cat.expenseCount === 0;
   const barWidth = Math.min(100, cat.percentUsed);
+  const pendingCount = cat.pendingCount ?? 0;
 
   return (
     <li
@@ -103,6 +106,14 @@ function BudgetCategoryRow({
           {isClosed && (
             <Badge variant="success" className="shrink-0">
               Vyřešeno
+            </Badge>
+          )}
+          {pendingCount > 0 && (
+            <Badge variant="warning" className="shrink-0">
+              {BUDGET_LABELS.pendingBadge}
+              {cat.pending != null && cat.pending > 0
+                ? ` ${formatCzk(cat.pending)}`
+                : ""}
             </Badge>
           )}
         </div>

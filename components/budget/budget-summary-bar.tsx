@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { formatCzk } from "@/lib/formatting";
 import type { BudgetOverview } from "@/lib/budget-stats";
 import { BUDGET_LABELS } from "@/lib/budget-labels";
@@ -16,7 +17,13 @@ function diffLabel(diff: number) {
   return "plán = skutečnost";
 }
 
-export function BudgetSummaryBar({ summary }: { summary: BudgetOverview }) {
+export function BudgetSummaryBar({
+  summary,
+  projectId,
+}: {
+  summary: BudgetOverview;
+  projectId?: string;
+}) {
   const {
     totalPlanned,
     totalSpent,
@@ -32,10 +39,15 @@ export function BudgetSummaryBar({ summary }: { summary: BudgetOverview }) {
     closedDiff,
     closedCount,
     openCount,
+    pendingAmount,
+    pendingCount,
   } = summary;
 
   const hasLimit = budgetLimit != null;
   const limit = budgetLimit ?? 0;
+  const pendingHref = projectId
+    ? `/p/${projectId}/rozpocet/vydaje?paymentStatus=pending`
+    : null;
 
   return (
     <div className="space-y-4">
@@ -51,12 +63,12 @@ export function BudgetSummaryBar({ summary }: { summary: BudgetOverview }) {
           <Stat
             label={BUDGET_LABELS.plannedTotal}
             value={formatCzk(totalPlanned)}
-            sub="Součet rozpočtů všech položek"
+            sub="Plán — výdaje ho nemění"
           />
           <Stat
             label={BUDGET_LABELS.spentTotal}
             value={formatCzk(totalSpent)}
-            sub="Všechny zaplacené výdaje"
+            sub="Jen zaplacené výdaje"
           />
           {hasLimit && remainingFromLimitSpent != null && (
             <Stat
@@ -74,6 +86,50 @@ export function BudgetSummaryBar({ summary }: { summary: BudgetOverview }) {
           )}
         </div>
       </SummarySection>
+
+      {pendingCount > 0 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-amber-950">
+                {BUDGET_LABELS.pendingSection}
+              </h2>
+              <p className="mt-0.5 text-xs text-amber-800/80">
+                {BUDGET_LABELS.pendingHint}
+              </p>
+            </div>
+            {pendingHref && (
+              <Link
+                href={pendingHref}
+                className="shrink-0 text-sm font-medium text-amber-900 underline-offset-2 hover:underline"
+              >
+                Zobrazit seznam →
+              </Link>
+            )}
+          </div>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <Stat
+              label={BUDGET_LABELS.pendingAmount}
+              value={formatCzk(pendingAmount)}
+              sub={`${pendingCount} ${
+                pendingCount === 1
+                  ? "výdaj"
+                  : pendingCount < 5
+                    ? "výdaje"
+                    : "výdajů"
+              } (plánováno / objednáno)`}
+              className="text-amber-900"
+            />
+            <div className="text-sm text-amber-900/90">
+              <p className="font-medium">Neodečítá se od rozpočtu</p>
+              <p className="mt-1 text-xs text-amber-800/80">
+                Až výdaj označíte jako zaplacený, přesune se do skutečných
+                nákladů a sníží zbývající částku.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <SummarySection
         title={BUDGET_LABELS.sectionActiveItems}

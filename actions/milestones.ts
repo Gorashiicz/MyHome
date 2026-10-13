@@ -1,11 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { PaymentStatus, type MilestoneStatus } from "@prisma/client";
+import { type MilestoneStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireProjectEditor, requireProjectAccess } from "@/lib/permissions";
 import { toNumber, formatCzk } from "@/lib/formatting";
 import { DEFAULT_MILESTONES } from "@/lib/milestone-defaults";
+import { expenseCountsTowardSpent } from "@/lib/expense-payment";
 
 export async function listMilestones(projectId: string) {
   await requireProjectAccess(projectId);
@@ -112,11 +113,6 @@ export async function getMilestoneOverview(projectId: string, milestoneId: strin
     include: { category: true },
   });
 
-  const paidStatuses: PaymentStatus[] = [
-    PaymentStatus.paid,
-    PaymentStatus.partially_paid,
-  ];
-
   const expenseWhere = {
     projectId,
     ...(milestone.categoryId
@@ -153,7 +149,9 @@ export async function getMilestoneOverview(projectId: string, milestoneId: strin
   ]);
 
   const spent = expenses
-    .filter((e) => paidStatuses.includes(e.paymentStatus))
+    .filter((e) =>
+      expenseCountsTowardSpent(e.paymentStatus, e.category?.name)
+    )
     .reduce((sum, e) => sum + toNumber(e.amount), 0);
 
   const planned = milestone.category

@@ -1,5 +1,7 @@
+import { PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { OTHER_BUDGET_CATEGORY_NAME } from "@/lib/budget-other-category";
+import { PENDING_STATUSES } from "@/lib/expense-payment";
 
 export async function ensureOtherBudgetCategory(projectId: string) {
   const existing = await prisma.budgetCategory.findFirst({
@@ -45,5 +47,16 @@ export async function syncBudgetExpenses(projectId: string) {
     },
     data: { categoryId: other.id },
   });
+
+  // Ostatní = okamžitý náklad — plánované/objednané hned započítat jako zaplacené.
+  await prisma.expense.updateMany({
+    where: {
+      projectId,
+      categoryId: other.id,
+      paymentStatus: { in: PENDING_STATUSES },
+    },
+    data: { paymentStatus: PaymentStatus.paid },
+  });
+
   return other;
 }

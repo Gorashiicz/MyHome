@@ -7,6 +7,8 @@ export type CategoryBudgetStat = {
   difference: number;
   closedAt: Date | null;
   expenseCount?: number;
+  pending?: number;
+  pendingCount?: number;
 };
 
 export type BudgetOverview = {
@@ -33,11 +35,21 @@ export type BudgetOverview = {
   budgetLimit: number | null;
   remaining: number | null;
   projectOverrun: number;
+  /** Rozepsané výdaje (plánováno / objednáno) — neodečítají se od rozpočtu */
+  pendingAmount: number;
+  pendingCount: number;
 };
 
 export function summarizeBudget(
   categories: CategoryBudgetStat[],
-  project: { budgetLimit: number | null; totalSpent: number; remaining: number | null; overrun: number }
+  project: {
+    budgetLimit: number | null;
+    totalSpent: number;
+    remaining: number | null;
+    overrun: number;
+    pendingAmount?: number;
+    pendingCount?: number;
+  }
 ): BudgetOverview {
   let totalPlanned = 0;
   let categorizedSpent = 0;
@@ -49,10 +61,14 @@ export function summarizeBudget(
   let activeCount = 0;
   let closedPlanned = 0;
   let closedSpent = 0;
+  let pendingAmountFromCategories = 0;
+  let pendingCountFromCategories = 0;
 
   for (const cat of categories) {
     totalPlanned += cat.planned;
     categorizedSpent += cat.spent;
+    pendingAmountFromCategories += cat.pending ?? 0;
+    pendingCountFromCategories += cat.pendingCount ?? 0;
     if (cat.difference > 0) totalSaved += cat.difference;
     if (cat.difference < 0) totalOverrun += Math.abs(cat.difference);
 
@@ -69,6 +85,9 @@ export function summarizeBudget(
       closedSpent += cat.spent;
     }
   }
+
+  const pendingAmount = project.pendingAmount ?? pendingAmountFromCategories;
+  const pendingCount = project.pendingCount ?? pendingCountFromCategories;
 
   return {
     totalPlanned,
@@ -98,6 +117,8 @@ export function summarizeBudget(
     budgetLimit: project.budgetLimit,
     remaining: project.remaining,
     projectOverrun: project.overrun,
+    pendingAmount,
+    pendingCount,
   };
 }
 

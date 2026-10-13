@@ -62,8 +62,20 @@ export default async function DashboardPage({
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-sm text-slate-600">Neuhrazené položky</p>
+            <p className="text-sm text-slate-600">
+              <Link
+                href={`/p/${projectId}/rozpocet/vydaje?paymentStatus=pending`}
+                className="hover:underline"
+              >
+                Rozepsáno / nerealizováno
+              </Link>
+            </p>
             <p className="text-xl font-semibold">{data.unpaidCount}</p>
+            {data.unpaidCount > 0 && (
+              <p className="mt-1 text-sm text-amber-800">
+                {formatCzk(data.pendingAmount)} — zatím se neodečítá
+              </p>
+            )}
           </CardContent>
         </Card>
         <Card>

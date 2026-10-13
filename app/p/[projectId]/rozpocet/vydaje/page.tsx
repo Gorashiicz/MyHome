@@ -4,11 +4,15 @@ import { resolveProjectRoute } from "@/lib/project-context";
 import { getExpenses } from "@/actions/expenses";
 import { formatCzk, formatDate, labelPaymentStatus, toNumber } from "@/lib/formatting";
 import { expenseListHeading, expenseListPreview, expenseListMeta } from "@/lib/expense-display";
+import { expenseIsUnrealizedReminder } from "@/lib/expense-payment";
+import { BUDGET_LABELS } from "@/lib/budget-labels";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { PaymentStatus } from "@prisma/client";
 import { SectionPage } from "@/components/layout/section-banner";
+import { cn } from "@/lib/utils";
 
 export default async function ExpensesListPage({
   params,
@@ -31,6 +35,14 @@ export default async function ExpensesListPage({
   });
 
   const total = expenses.reduce((s, e) => s + toNumber(e.amount), 0);
+  const pendingInView = expenses.filter((e) =>
+    expenseIsUnrealizedReminder(e.paymentStatus, e.category?.name)
+  );
+  const pendingTotal = pendingInView.reduce(
+    (s, e) => s + toNumber(e.amount),
+    0
+  );
+  const showingPendingOnly = sp.paymentStatus === "pending";
 
   const [categories, suppliers] = await Promise.all([
     prisma.budgetCategory.findMany({
@@ -63,6 +75,7 @@ export default async function ExpensesListPage({
         </Select>
         <Select name="paymentStatus" defaultValue={sp.paymentStatus ?? ""}>
           <option value="">Všechny stavy</option>
+          <option value="pending">Rozepsáno / nerealizováno</option>
           {Object.values(PaymentStatus).map((s) => (
             <option key={s} value={s}>
               {labelPaymentStatus(s)}
@@ -73,6 +86,40 @@ export default async function ExpensesListPage({
           Filtrovat
         </Button>
       </form>
+
+      {(showingPendingOnly || pendingInView.length > 0) && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          {showingPendingOnly ? (
+            <>
+              <p className="font-medium">{BUDGET_LABELS.pendingSection}</p>
+              <p className="mt-1 text-amber-900/90">
+                {BUDGET_LABELS.pendingHint}
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-medium">
+                V tomto výpisu je {pendingInView.length}{" "}
+                {pendingInView.length === 1
+                  ? "nerealizovaný výdaj"
+                  : pendingInView.length < 5
+                    ? "nerealizované výdaje"
+                    : "nerealizovaných výdajů"}{" "}
+                za {formatCzk(pendingTotal)}.
+              </p>
+              <p className="mt-1 text-amber-900/90">
+                Neodečítají se od rozpočtu, dokud je neoznačíte jako zaplacené.{" "}
+                <Link
+                  href={`/p/${projectId}/rozpocet/vydaje?paymentStatus=pending`}
+                  className="font-medium underline-offset-2 hover:underline"
+                >
+                  Zobrazit jen ty →
+                </Link>
+              </p>
+            </>
+          )}
+        </div>
+      )}
 
       <p className="text-sm font-medium">
         Součet filtru: {formatCzk(total)} ({expenses.length} položek)
@@ -89,14 +136,30 @@ export default async function ExpensesListPage({
         {expenses.map((e) => {
           const preview = expenseListPreview(e);
           const meta = expenseListMeta(e);
+          const isPending = expenseIsUnrealizedReminder(
+            e.paymentStatus,
+            e.category?.name
+          );
           return (
             <li key={e.id}>
               <Link
                 href={`/p/${projectId}/rozpocet/vydaje/${e.id}`}
-                className="block rounded-lg border border-slate-200 bg-white px-3 py-3 transition hover:border-emerald-300"
+                className={cn(
+                  "block rounded-lg border bg-white px-3 py-3 transition",
+                  isPending
+                    ? "border-amber-200 hover:border-amber-400"
+                    : "border-slate-200 hover:border-emerald-300"
+                )}
               >
                 <div className="flex justify-between gap-2">
-                  <span className="font-medium">{expenseListHeading(e)}</span>
+                  <span className="flex min-w-0 items-center gap-2 font-medium">
+                    <span className="truncate">{expenseListHeading(e)}</span>
+                    {isPending && (
+                      <Badge variant="warning" className="shrink-0">
+                        {BUDGET_LABELS.pendingBadge}
+                      </Badge>
+                    )}
+                  </span>
                   <span className="shrink-0 font-semibold">
                     {formatCzk(e.amount)}
                   </span>

@@ -1,6 +1,9 @@
-import { PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { toNumber } from "@/lib/formatting";
+import {
+  expenseCountsTowardSpent,
+  expenseIsUnrealizedReminder,
+} from "@/lib/expense-payment";
 
 export async function getDashboardData(projectId: string) {
   const project = await prisma.project.findUniqueOrThrow({
@@ -13,14 +16,22 @@ export async function getDashboardData(projectId: string) {
     orderBy: { expenseDate: "desc" },
   });
 
-  const paidStatuses: PaymentStatus[] = [
-    PaymentStatus.paid,
-    PaymentStatus.partially_paid,
-  ];
+  const spentExpenses = expenses.filter((e) =>
+    expenseCountsTowardSpent(e.paymentStatus, e.category?.name)
+  );
+  const pendingExpenses = expenses.filter((e) =>
+    expenseIsUnrealizedReminder(e.paymentStatus, e.category?.name)
+  );
 
-  const totalSpent = expenses
-    .filter((e) => paidStatuses.includes(e.paymentStatus))
-    .reduce((sum, e) => sum + toNumber(e.amount), 0);
+  const totalSpent = spentExpenses.reduce(
+    (sum, e) => sum + toNumber(e.amount),
+    0
+  );
+  const pendingAmount = pendingExpenses.reduce(
+    (sum, e) => sum + toNumber(e.amount),
+    0
+  );
+  const unpaidCount = pendingExpenses.length;
 
   const budgetLimit =
     project.budgetMode === "limited" && project.budgetLimit
@@ -35,12 +46,6 @@ export async function getDashboardData(projectId: string) {
       ? totalSpent - budgetLimit
       : 0;
 
-  const unpaidCount = expenses.filter(
-    (e) =>
-      e.paymentStatus === PaymentStatus.planned ||
-      e.paymentStatus === PaymentStatus.ordered
-  ).length;
-
   const categories = await prisma.budgetCategory.findMany({
     where: { projectId },
     orderBy: { sortOrder: "asc" },
@@ -49,8 +54,14 @@ export async function getDashboardData(projectId: string) {
   const categoryStats = categories.map((cat) => {
     const categoryExpenses = expenses.filter((e) => e.categoryId === cat.id);
     const spent = categoryExpenses
-      .filter((e) => paidStatuses.includes(e.paymentStatus))
+      .filter((e) => expenseCountsTowardSpent(e.paymentStatus, cat.name))
       .reduce((sum, e) => sum + toNumber(e.amount), 0);
+    const pending = categoryExpenses
+      .filter((e) => expenseIsUnrealizedReminder(e.paymentStatus, cat.name))
+      .reduce((sum, e) => sum + toNumber(e.amount), 0);
+    const pendingCount = categoryExpenses.filter((e) =>
+      expenseIsUnrealizedReminder(e.paymentStatus, cat.name)
+    ).length;
     const planned = toNumber(cat.plannedAmount);
     return {
       id: cat.id,
@@ -58,6 +69,8 @@ export async function getDashboardData(projectId: string) {
       note: cat.note,
       planned,
       spent,
+      pending,
+      pendingCount,
       expenseCount: categoryExpenses.length,
       difference: planned - spent,
       percentUsed: planned > 0 ? Math.round((spent / planned) * 100) : 0,
@@ -112,6 +125,7 @@ export async function getDashboardData(projectId: string) {
   return {
     project,
     totalSpent,
+    pendingAmount,
     budgetLimit,
     remaining,
     overrun,

@@ -1,11 +1,7 @@
 import { PaymentStatus } from "@prisma/client";
 import type { BudgetCategoryOption } from "@/components/forms/budget-category-picker";
 import { sortExpenseBudgetOptions } from "@/lib/budget-other-category";
-
-const paidStatuses: PaymentStatus[] = [
-  PaymentStatus.paid,
-  PaymentStatus.partially_paid,
-];
+import { expenseCountsTowardSpent } from "@/lib/expense-payment";
 
 type CategoryStat = {
   id: string;
@@ -28,7 +24,7 @@ export function buildExpenseBudgetOptions(
       let spent = c.spent;
       if (
         editing?.categoryId === c.id &&
-        paidStatuses.includes(editing.paymentStatus)
+        expenseCountsTowardSpent(editing.paymentStatus, c.name)
       ) {
         spent = Math.max(0, spent - editing.amount);
       }

@@ -6,82 +6,106 @@ import { cn } from "@/lib/utils";
 export function CategoryBudgetSummary({
   planned,
   spent,
+  pending = 0,
+  pendingCount = 0,
 }: {
   planned: number;
   spent: number;
+  pending?: number;
+  pendingCount?: number;
 }) {
   const s = getCategoryBudgetSummary(planned, spent);
   const barWidth =
     s.percentUsed != null ? Math.min(100, s.percentUsed) : spent > 0 ? 100 : 0;
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
-      <div className="grid gap-4 sm:grid-cols-3">
-        <SummaryCell
-          label={BUDGET_LABELS.planned}
-          value={formatCzk(s.planned)}
-          sub="Plánovaná částka pro tuto položku"
-        />
-        <SummaryCell
-          label={BUDGET_LABELS.spent}
-          value={formatCzk(s.spent)}
-          sub="Součet zaplacených výdajů"
-        />
-        <SummaryCell
-          label={s.resultLabel}
-          value={s.resultValue}
-          sub={s.tone === "over" ? "O kolik přesahujete rozpočet" : undefined}
-          highlight={
-            s.tone === "saved"
-              ? "good"
-              : s.tone === "over"
-                ? "bad"
-                : s.tone === "even"
-                  ? "neutral"
-                  : undefined
-          }
-        />
+    <div className="space-y-3">
+      <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-4">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <SummaryCell
+            label={BUDGET_LABELS.planned}
+            value={formatCzk(s.planned)}
+            sub="Plánovaná částka — výdaje ji nemění"
+          />
+          <SummaryCell
+            label={BUDGET_LABELS.spent}
+            value={formatCzk(s.spent)}
+            sub="Jen zaplacené výdaje"
+          />
+          <SummaryCell
+            label={s.resultLabel}
+            value={s.resultValue}
+            sub={s.tone === "over" ? "O kolik přesahujete rozpočet" : undefined}
+            highlight={
+              s.tone === "saved"
+                ? "good"
+                : s.tone === "over"
+                  ? "bad"
+                  : s.tone === "even"
+                    ? "neutral"
+                    : undefined
+            }
+          />
+        </div>
+
+        {s.percentUsed != null && (
+          <div className="mt-4">
+            <div className="mb-1 flex justify-between text-xs text-slate-500">
+              <span>{BUDGET_LABELS.percentUsed}</span>
+              <span
+                className={cn(
+                  "font-medium tabular-nums",
+                  s.percentUsed > 100 ? "text-red-600" : "text-slate-700"
+                )}
+              >
+                {s.percentUsed > 100
+                  ? `${s.percentUsed} % rozpočtu`
+                  : formatPercent(s.percentUsed)}
+              </span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+              <div
+                className={cn(
+                  "h-full transition-all",
+                  s.percentUsed > 100 ? "bg-red-500" : "bg-emerald-500"
+                )}
+                style={{ width: `${barWidth}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <p
+          className={cn(
+            "mt-3 text-sm",
+            s.tone === "over"
+              ? "text-red-700"
+              : s.tone === "saved"
+                ? "text-emerald-800"
+                : "text-slate-600"
+          )}
+        >
+          {s.hint}
+        </p>
       </div>
 
-      {s.percentUsed != null && (
-        <div className="mt-4">
-          <div className="mb-1 flex justify-between text-xs text-slate-500">
-            <span>{BUDGET_LABELS.percentUsed}</span>
-            <span
-              className={cn(
-                "font-medium tabular-nums",
-                s.percentUsed > 100 ? "text-red-600" : "text-slate-700"
-              )}
-            >
-              {s.percentUsed > 100
-                ? `${s.percentUsed} % rozpočtu`
-                : formatPercent(s.percentUsed)}
-            </span>
-          </div>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-            <div
-              className={cn(
-                "h-full transition-all",
-                s.percentUsed > 100 ? "bg-red-500" : "bg-emerald-500"
-              )}
-              style={{ width: `${barWidth}%` }}
-            />
-          </div>
+      {pendingCount > 0 && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-amber-800">
+            {BUDGET_LABELS.pendingSection}
+          </p>
+          <p className="mt-1 text-lg font-bold tabular-nums text-amber-950">
+            {formatCzk(pending)}
+          </p>
+          <p className="mt-1 text-sm text-amber-900/90">
+            {pendingCount === 1
+              ? "1 výdaj je rozepsán a připraven, ale ještě nerealizován. Od rozpočtu se zatím neodečítá."
+              : pendingCount < 5
+                ? `${pendingCount} výdaje jsou rozepsané a připravené, ale ještě nerealizované. Od rozpočtu se zatím neodečítají.`
+                : `${pendingCount} výdajů je rozepsaných a připravených, ale ještě nerealizovaných. Od rozpočtu se zatím neodečítají.`}
+          </p>
         </div>
       )}
-
-      <p
-        className={cn(
-          "mt-3 text-sm",
-          s.tone === "over"
-            ? "text-red-700"
-            : s.tone === "saved"
-              ? "text-emerald-800"
-              : "text-slate-600"
-        )}
-      >
-        {s.hint}
-      </p>
     </div>
   );
 }

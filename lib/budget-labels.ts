@@ -1,9 +1,10 @@
 /** Terminologie v UI: rozpočet = odhad položky, náklady = zaplacené výdaje. */
 
 export const BUDGET_REFERENCE_INTRO =
-  "Nahoře je celkový rozpočet a všechny náklady. " +
-  "Sekce „Položky s výdaji“ porovnává plánovaný rozpočet jen u položek, kde už evidujete výdaje, se skutečností — " +
-  "to je srovnání, které hledáte u rozjeté nebo hotové práce.";
+  "Rozpočet položek zůstává beze změny — je to váš plán. " +
+  "Zaplacené výdaje snižují zbývající částku. " +
+  "Výdaje ve stavu Plánováno / Objednáno u běžných položek rozpočet neodečítají, ale zobrazí se jako „rozepsáno, nerealizováno“. " +
+  "Výdaje v položce Ostatní se vždy odečítají ihned.";
 
 export const BUDGET_LABELS = {
   /** @deprecated použijte planned */
@@ -51,4 +52,10 @@ export const BUDGET_LABELS = {
   remainingFromLimit: "Zbývá z limitu stavby",
   overLimit: "Přes limit stavby",
   itemsVsSpent: "Rozdíl položek a nákladů",
+  pendingSection: "Rozepsáno — zatím nerealizováno",
+  pendingAmount: "Připravené výdaje",
+  pendingHint:
+    "Tyto částky se ještě neodečítají od rozpočtu. Až je označíte jako zaplacené, započítají se do skutečných nákladů.",
+  pendingBadge: "Nerealizováno",
+  pendingEmpty: "Žádné rozepsané výdaje čekající na realizaci.",
 } as const;
