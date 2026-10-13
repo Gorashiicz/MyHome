@@ -4,7 +4,8 @@ export const BUDGET_REFERENCE_INTRO =
   "Rozpočet položek zůstává beze změny — je to váš plán. " +
   "Každý zadaný výdaj se ihned započítá do skutečných nákladů a sníží zbývající částku " +
   "(stav Zaplaceno není potřeba). " +
-  "Výdaje ve stavu Plánováno / Objednáno se stejně odečítají, ale zůstanou vidět jako připomínka k doplacení.";
+  "Výdaje ve stavu Plánováno / Objednáno se stejně odečítají, ale zůstanou vidět jako připomínka k doplacení. " +
+  "Položka Ostatní nemá zaškrtávání — vše do ní zadané se odečítá rovnou.";
 
 export const BUDGET_LABELS = {
   /** @deprecated použijte planned */

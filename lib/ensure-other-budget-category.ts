@@ -1,5 +1,7 @@
+import { PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { OTHER_BUDGET_CATEGORY_NAME } from "@/lib/budget-other-category";
+import { PENDING_STATUSES } from "@/lib/expense-payment";
 
 export async function ensureOtherBudgetCategory(projectId: string) {
   const existing = await prisma.budgetCategory.findFirst({
@@ -17,7 +19,7 @@ export async function ensureOtherBudgetCategory(projectId: string) {
       projectId,
       name: OTHER_BUDGET_CATEGORY_NAME,
       plannedAmount: 0,
-      note: "Výdaje mimo ostatní rozpočtové položky",
+      note: "Výdaje mimo ostatní rozpočtové položky — odečítají se hned",
       sortOrder: (maxOrder._max.sortOrder ?? 0) + 1,
     },
   });
@@ -44,6 +46,22 @@ export async function syncBudgetExpenses(projectId: string) {
       ],
     },
     data: { categoryId: other.id },
+  });
+
+  // Ostatní: bez „vyřešeno“, výdaje rovnou jako zaplacené / do nákladů.
+  if (other.closedAt) {
+    await prisma.budgetCategory.update({
+      where: { id: other.id },
+      data: { closedAt: null },
+    });
+  }
+  await prisma.expense.updateMany({
+    where: {
+      projectId,
+      categoryId: other.id,
+      paymentStatus: { in: PENDING_STATUSES },
+    },
+    data: { paymentStatus: PaymentStatus.paid },
   });
 
   return other;

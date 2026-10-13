@@ -39,8 +39,14 @@ export async function toggleCategoryClosed(
 
   const category = await prisma.budgetCategory.findFirstOrThrow({
     where: { id: categoryId, projectId },
-    select: { closedAt: true },
+    select: { closedAt: true, name: true },
   });
+
+  if (isOtherBudgetCategory(category.name)) {
+    throw new Error(
+      "Položku Ostatní nelze označit jako vyřešenou — výdaje se odečítají hned."
+    );
+  }
 
   await prisma.budgetCategory.update({
     where: { id: categoryId, projectId },

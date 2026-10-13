@@ -1,4 +1,5 @@
 import { PaymentStatus } from "@prisma/client";
+import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 
 /** Historicky „zaplacené“ stavy — UI štítky. Do nákladů se počítá vše kromě zrušených. */
 export const PAID_STATUSES: PaymentStatus[] = [
@@ -7,8 +8,8 @@ export const PAID_STATUSES: PaymentStatus[] = [
 ];
 
 /**
- * Plánováno / objednáno — připomínka, že platba ještě není hotová.
- * Od rozpočtu / nákladů se ale odečítají hned při zadání (kromě zrušených).
+ * Plánováno / objednáno — připomínka u běžných položek.
+ * Od nákladů se odečítají hned. U „Ostatní“ se stav nepoužívá (vždy zaplaceno).
  */
 export const PENDING_STATUSES: PaymentStatus[] = [
   PaymentStatus.planned,
@@ -25,34 +26,38 @@ export function isPendingExpenseStatus(status: PaymentStatus): boolean {
 
 /**
  * Zda výdaj snižuje skutečné náklady a zbývající rozpočet.
- * Počítá se hned při zadání — bez nutnosti označit „Zaplaceno“.
- * Zrušené výdaje se nepočítají.
+ * Počítá se hned při zadání. Zrušené se nepočítají.
+ * „Ostatní“ vždy (kromě zrušených) — bez zaškrtávání.
  */
 export function expenseCountsTowardSpent(
   status: PaymentStatus,
   _categoryName?: string | null
 ): boolean {
   void _categoryName;
+  // Ostatní i běžné položky: vše kromě zrušených se hned počítá do nákladů.
   return status !== PaymentStatus.cancelled;
 }
 
 /**
- * Připomínka „rozepsáno / ještě nezaplaceno“ — výdaj už je v nákladech,
- * ale stav platby ještě není zaplaceno.
+ * Připomínka nezaplacených — u „Ostatní“ nikdy (stav platby se neeviduje).
  */
 export function expenseIsUnrealizedReminder(
   status: PaymentStatus,
-  _categoryName?: string | null
+  categoryName?: string | null
 ): boolean {
-  void _categoryName;
+  if (categoryName && isOtherBudgetCategory(categoryName)) return false;
   return isPendingExpenseStatus(status);
 }
 
-/** Stav platby při uložení — nemění se podle kategorie. */
+/** U „Ostatní“ vždy Zaplaceno — výdaj se rovnou odečte, bez výběru stavu. */
 export function paymentStatusForCategory(
   status: PaymentStatus,
-  _categoryName?: string | null
+  categoryName?: string | null
 ): PaymentStatus {
-  void _categoryName;
+  if (categoryName && isOtherBudgetCategory(categoryName)) {
+    return status === PaymentStatus.cancelled
+      ? PaymentStatus.cancelled
+      : PaymentStatus.paid;
+  }
   return status;
 }

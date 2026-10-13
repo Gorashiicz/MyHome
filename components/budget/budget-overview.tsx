@@ -6,6 +6,7 @@ import { truncateText } from "@/lib/expense-display";
 import { CategoryDeleteButton } from "@/components/budget/category-delete-button";
 import { AddCategoryForm } from "@/components/budget/add-category-form";
 import { BUDGET_LABELS } from "@/lib/budget-labels";
+import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -76,11 +77,19 @@ function BudgetCategoryRow({
   cat: Row;
   canEdit: boolean;
 }) {
-  const diff = categoryDifferenceLabel(cat.difference);
-  const isClosed = !!cat.closedAt;
-  const canDelete = cat.expenseCount === 0;
+  const isOther = isOtherBudgetCategory(cat.name);
+  const diff = isOther
+    ? cat.spent > 0
+      ? {
+          text: formatCzk(cat.spent),
+          tone: "even" as const,
+        }
+      : { text: "—", tone: "even" as const }
+    : categoryDifferenceLabel(cat.difference);
+  const isClosed = !!cat.closedAt && !isOther;
+  const canDelete = cat.expenseCount === 0 && !isOther;
   const barWidth = Math.min(100, cat.percentUsed);
-  const pendingCount = cat.pendingCount ?? 0;
+  const pendingCount = isOther ? 0 : (cat.pendingCount ?? 0);
 
   return (
     <li
@@ -103,6 +112,11 @@ function BudgetCategoryRow({
           >
             {cat.name}
           </Link>
+          {isOther && (
+            <Badge variant="default" className="shrink-0">
+              Odečítá se hned
+            </Badge>
+          )}
           {isClosed && (
             <Badge variant="success" className="shrink-0">
               Vyřešeno
@@ -122,6 +136,11 @@ function BudgetCategoryRow({
             {truncateText(cat.note, 40)}
           </p>
         )}
+        {isOther && (
+          <p className="truncate text-xs text-slate-500">
+            Náklady mimo položky rozpočtu — bez zaškrtávání.
+          </p>
+        )}
         <div className="mt-1 h-1 overflow-hidden rounded-full bg-slate-100 sm:max-w-[12rem]">
           <div
             className={cn(
@@ -137,7 +156,7 @@ function BudgetCategoryRow({
             <MobileCell label={BUDGET_LABELS.spent} value={formatCzk(cat.spent)} />
             <MobileCell label="Rozdíl" value={diff.text} tone={diff.tone} />
           </div>
-          {canEdit && (
+          {canEdit && !isOther && (
             <div className="flex shrink-0 gap-1">
               <form action={toggleCategoryClosed.bind(null, projectId, cat.id)}>
                 <button
@@ -181,7 +200,13 @@ function BudgetCategoryRow({
         {diff.text}
       </span>
       <span className="hidden text-center sm:block">
-        {cat.spent === 0 ? (
+        {isOther ? (
+          cat.spent > 0 ? (
+            <Badge variant="warning">Náklady</Badge>
+          ) : (
+            <Badge variant="default">Prázdné</Badge>
+          )
+        ) : cat.spent === 0 ? (
           <Badge variant="default">Nezačato</Badge>
         ) : cat.percentUsed > 100 ? (
           <Badge variant="danger">Přečerpáno</Badge>
@@ -192,7 +217,14 @@ function BudgetCategoryRow({
         )}
       </span>
       <div className="hidden justify-center sm:flex">
-        {canEdit ? (
+        {isOther ? (
+          <span
+            className="flex h-7 w-7 items-center justify-center text-xs text-slate-300"
+            title="Ostatní se neoznačuje jako vyřešené — výdaje se odečítají hned"
+          >
+            ·
+          </span>
+        ) : canEdit ? (
           <form action={toggleCategoryClosed.bind(null, projectId, cat.id)}>
             <button
               type="submit"

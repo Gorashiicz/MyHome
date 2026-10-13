@@ -9,6 +9,7 @@ import {
   toNumber,
 } from "@/lib/formatting";
 import { BUDGET_LABELS } from "@/lib/budget-labels";
+import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 import {
   expenseCountsTowardSpent,
   expenseIsUnrealizedReminder,
@@ -44,8 +45,9 @@ export default async function CategoryDetailPage({
     (sum, e) => sum + toNumber(e.amount),
     0
   );
-  const isClosed = !!category.closedAt;
-  const canDelete = expenses.length === 0;
+  const isOther = isOtherBudgetCategory(category.name);
+  const isClosed = !!category.closedAt && !isOther;
+  const canDelete = expenses.length === 0 && !isOther;
 
   return (
     <div className="space-y-4">
@@ -61,6 +63,9 @@ export default async function CategoryDetailPage({
           <div>
             <CardTitle className="flex items-center gap-2">
               {category.name}
+              {isOther && (
+                <Badge variant="default">Odečítá se hned</Badge>
+              )}
               {isClosed && <Badge variant="success">Vyřešeno</Badge>}
             </CardTitle>
           </div>
@@ -71,20 +76,28 @@ export default async function CategoryDetailPage({
                   + Výdaj
                 </Link>
               </Button>
-              <form action={toggleCategoryClosed.bind(null, projectId, categoryId)}>
-                <Button type="submit" size="sm" variant={isClosed ? "outline" : "secondary"}>
-                  {isClosed ? "Znovu otevřít" : "Označit vyřešeno"}
-                </Button>
-              </form>
+              {!isOther && (
+                <form action={toggleCategoryClosed.bind(null, projectId, categoryId)}>
+                  <Button type="submit" size="sm" variant={isClosed ? "outline" : "secondary"}>
+                    {isClosed ? "Znovu otevřít" : "Označit vyřešeno"}
+                  </Button>
+                </form>
+              )}
             </div>
           )}
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
+          {isOther && (
+            <p className="rounded-md border border-emerald-100 bg-emerald-50/80 px-3 py-2 text-sm text-emerald-950">
+              Výdaje v Ostatní se vždy hned započítají do nákladů. Není potřeba
+              nic zaškrtávat jako zaplacené ani vyřešené.
+            </p>
+          )}
           <CategoryBudgetSummary
             planned={planned}
             spent={spent}
-            pending={pending}
-            pendingCount={pendingExpenses.length}
+            pending={isOther ? 0 : pending}
+            pendingCount={isOther ? 0 : pendingExpenses.length}
           />
 
           {category.note && (

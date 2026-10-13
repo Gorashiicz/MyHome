@@ -227,35 +227,45 @@ export function ExpenseForm({
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="paymentStatus">Stav platby</Label>
-        <Select
-          id="paymentStatus"
-          name="paymentStatus"
-          value={paymentStatus}
-          onChange={(e) =>
-            setPaymentStatus(e.target.value as PaymentStatus)
-          }
-          className="mt-1"
-        >
-          <option value="planned">Plánováno</option>
-          <option value="ordered">Objednáno</option>
-          <option value="paid">Zaplaceno</option>
-          <option value="partially_paid">Částečně zaplaceno</option>
-          <option value="cancelled">Zrušeno</option>
-        </Select>
-        {paymentStatus === "cancelled" ? (
-          <p className="mt-1.5 text-xs text-slate-500">
-            Zrušený výdaj se do nákladů nepočítá.
+      {isOther ? (
+        <div className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-950">
+          <input type="hidden" name="paymentStatus" value="paid" />
+          <p className="font-medium">Ostatní — odečítá se hned</p>
+          <p className="mt-1 text-xs text-emerald-900/90">
+            Stav platby se zde nevybírá. Částka se rovnou započítá do nákladů a
+            sníží zbývající rozpočet.
           </p>
-        ) : (
-          <p className="mt-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-xs text-emerald-950">
-            Výdaj se <strong>ihned započítá do nákladů</strong> a sníží zbývající
-            rozpočet — stav Zaplaceno není potřeba. Plánováno / Objednáno slouží
-            jen jako připomínka k platbě.
-          </p>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div>
+          <Label htmlFor="paymentStatus">Stav platby</Label>
+          <Select
+            id="paymentStatus"
+            name="paymentStatus"
+            value={paymentStatus}
+            onChange={(e) =>
+              setPaymentStatus(e.target.value as PaymentStatus)
+            }
+            className="mt-1"
+          >
+            <option value="planned">Plánováno</option>
+            <option value="ordered">Objednáno</option>
+            <option value="paid">Zaplaceno</option>
+            <option value="partially_paid">Částečně zaplaceno</option>
+            <option value="cancelled">Zrušeno</option>
+          </Select>
+          {paymentStatus === "cancelled" ? (
+            <p className="mt-1.5 text-xs text-slate-500">
+              Zrušený výdaj se do nákladů nepočítá.
+            </p>
+          ) : (
+            <p className="mt-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-2 text-xs text-emerald-950">
+              Výdaj se <strong>ihned započítá do nákladů</strong>. Plánováno /
+              Objednáno slouží jen jako připomínka k platbě.
+            </p>
+          )}
+        </div>
+      )}
 
       <input type="hidden" name="categoryId" value={selectedBudgetId} />
       {stage && <input type="hidden" name="stage" value={stage} />}
