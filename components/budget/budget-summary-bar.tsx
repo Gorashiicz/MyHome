@@ -68,7 +68,7 @@ export function BudgetSummaryBar({
           <Stat
             label={BUDGET_LABELS.spentTotal}
             value={formatCzk(totalSpent)}
-            sub="Jen zaplacené výdaje"
+            sub="Všechny zadané výdaje (kromě zrušených)"
           />
           {hasLimit && remainingFromLimitSpent != null && (
             <Stat
@@ -121,10 +121,10 @@ export function BudgetSummaryBar({
               className="text-amber-900"
             />
             <div className="text-sm text-amber-900/90">
-              <p className="font-medium">Neodečítá se od rozpočtu</p>
+              <p className="font-medium">Už je v nákladech</p>
               <p className="mt-1 text-xs text-amber-800/80">
-                Až výdaj označíte jako zaplacený, přesune se do skutečných
-                nákladů a sníží zbývající částku.
+                Částka se odečetla hned při zadání. Označení Zaplaceno jen
+                potvrdí, že je platba hotová.
               </p>
             </div>
           </div>

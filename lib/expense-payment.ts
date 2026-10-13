@@ -1,16 +1,14 @@
 import { PaymentStatus } from "@prisma/client";
-import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 
-/** Zaplacené — započítávají se do skutečných nákladů a snižují zbývající rozpočet. */
+/** Historicky „zaplacené“ stavy — UI štítky. Do nákladů se počítá vše kromě zrušených. */
 export const PAID_STATUSES: PaymentStatus[] = [
   PaymentStatus.paid,
   PaymentStatus.partially_paid,
 ];
 
 /**
- * Rozepsané / připravené, ale ještě nerealizované (běžné položky rozpočtu).
- * Neodečítají se od rozpočtu — mají zůstat viditelné, ať na ně uživatel nezapomene.
- * U položky „Ostatní“ se toto nepoužívá — tam se náklady odečítají hned.
+ * Plánováno / objednáno — připomínka, že platba ještě není hotová.
+ * Od rozpočtu / nákladů se ale odečítají hned při zadání (kromě zrušených).
  */
 export const PENDING_STATUSES: PaymentStatus[] = [
   PaymentStatus.planned,
@@ -26,41 +24,35 @@ export function isPendingExpenseStatus(status: PaymentStatus): boolean {
 }
 
 /**
- * Zda výdaj snižuje skutečné náklady / zbývající rozpočet.
- * „Ostatní“ = okamžitý náklad (kromě zrušených), i když je ještě plánováno/objednáno.
+ * Zda výdaj snižuje skutečné náklady a zbývající rozpočet.
+ * Počítá se hned při zadání — bez nutnosti označit „Zaplaceno“.
+ * Zrušené výdaje se nepočítají.
  */
 export function expenseCountsTowardSpent(
   status: PaymentStatus,
-  categoryName?: string | null
+  _categoryName?: string | null
 ): boolean {
-  if (status === PaymentStatus.cancelled) return false;
-  if (categoryName && isOtherBudgetCategory(categoryName)) return true;
-  return isPaidExpenseStatus(status);
+  void _categoryName;
+  return status !== PaymentStatus.cancelled;
 }
 
 /**
- * Zda výdaj patří do připomínky „rozepsáno, nerealizováno“.
- * U „Ostatní“ nikdy — ty se vždy počítají do nákladů.
+ * Připomínka „rozepsáno / ještě nezaplaceno“ — výdaj už je v nákladech,
+ * ale stav platby ještě není zaplaceno.
  */
 export function expenseIsUnrealizedReminder(
   status: PaymentStatus,
-  categoryName?: string | null
+  _categoryName?: string | null
 ): boolean {
-  if (categoryName && isOtherBudgetCategory(categoryName)) return false;
+  void _categoryName;
   return isPendingExpenseStatus(status);
 }
 
-/** Při uložení výdaje do „Ostatní“ vždy započítat jako realizovaný náklad. */
+/** Stav platby při uložení — nemění se podle kategorie. */
 export function paymentStatusForCategory(
   status: PaymentStatus,
-  categoryName?: string | null
+  _categoryName?: string | null
 ): PaymentStatus {
-  if (
-    categoryName &&
-    isOtherBudgetCategory(categoryName) &&
-    isPendingExpenseStatus(status)
-  ) {
-    return PaymentStatus.paid;
-  }
+  void _categoryName;
   return status;
 }

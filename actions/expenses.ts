@@ -18,7 +18,6 @@ import {
   saveUploadedFile,
 } from "@/lib/storage";
 import { paymentStatusForCategory } from "@/lib/expense-payment";
-import { isOtherBudgetCategory } from "@/lib/budget-other-category";
 
 function parseTags(tags?: string) {
   if (!tags) return [];
@@ -221,27 +220,7 @@ export async function getExpenses(
   }
   if (filters?.categoryId) where.categoryId = filters.categoryId;
   if (filters?.paymentStatus === "pending") {
-    // Nerealizované jen u běžných položek — Ostatní se vždy počítá do nákladů.
-    const otherCategories = await prisma.budgetCategory.findMany({
-      where: { projectId },
-      select: { id: true, name: true },
-    });
-    const otherIds = otherCategories
-      .filter((c) => isOtherBudgetCategory(c.name))
-      .map((c) => c.id);
     where.paymentStatus = { in: ["planned", "ordered"] };
-    if (otherIds.length > 0) {
-      where.AND = [
-        ...(Array.isArray(where.AND)
-          ? where.AND
-          : where.AND
-            ? [where.AND]
-            : []),
-        {
-          OR: [{ categoryId: null }, { categoryId: { notIn: otherIds } }],
-        },
-      ];
-    }
   } else if (filters?.paymentStatus) {
     where.paymentStatus = filters.paymentStatus as never;
   }

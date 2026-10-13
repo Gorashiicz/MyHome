@@ -30,7 +30,7 @@ export function CategoryBudgetSummary({
           <SummaryCell
             label={BUDGET_LABELS.spent}
             value={formatCzk(s.spent)}
-            sub="Jen zaplacené výdaje"
+            sub="Všechny zadané výdaje (kromě zrušených)"
           />
           <SummaryCell
             label={s.resultLabel}
@@ -99,10 +99,10 @@ export function CategoryBudgetSummary({
           </p>
           <p className="mt-1 text-sm text-amber-900/90">
             {pendingCount === 1
-              ? "1 výdaj je rozepsán a připraven, ale ještě nerealizován. Od rozpočtu se zatím neodečítá."
+              ? "1 výdaj je už v nákladech, ale ještě není označený jako zaplacený."
               : pendingCount < 5
-                ? `${pendingCount} výdaje jsou rozepsané a připravené, ale ještě nerealizované. Od rozpočtu se zatím neodečítají.`
-                : `${pendingCount} výdajů je rozepsaných a připravených, ale ještě nerealizovaných. Od rozpočtu se zatím neodečítají.`}
+                ? `${pendingCount} výdaje jsou už v nákladech, ale ještě nejsou označené jako zaplacené.`
+                : `${pendingCount} výdajů je už v nákladech, ale ještě nejsou označené jako zaplacené.`}
           </p>
         </div>
       )}

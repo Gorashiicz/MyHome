@@ -75,7 +75,7 @@ export default async function ExpensesListPage({
         </Select>
         <Select name="paymentStatus" defaultValue={sp.paymentStatus ?? ""}>
           <option value="">Všechny stavy</option>
-          <option value="pending">Rozepsáno / nerealizováno</option>
+          <option value="pending">Zadáno — ještě nezaplaceno</option>
           {Object.values(PaymentStatus).map((s) => (
             <option key={s} value={s}>
               {labelPaymentStatus(s)}
@@ -108,7 +108,7 @@ export default async function ExpensesListPage({
                 za {formatCzk(pendingTotal)}.
               </p>
               <p className="mt-1 text-amber-900/90">
-                Neodečítají se od rozpočtu, dokud je neoznačíte jako zaplacené.{" "}
+                Už jsou v nákladech; označení Zaplaceno jen potvrdí platbu.{" "}
                 <Link
                   href={`/p/${projectId}/rozpocet/vydaje?paymentStatus=pending`}
                   className="font-medium underline-offset-2 hover:underline"

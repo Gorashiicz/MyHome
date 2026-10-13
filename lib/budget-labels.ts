@@ -2,9 +2,9 @@
 
 export const BUDGET_REFERENCE_INTRO =
   "Rozpočet položek zůstává beze změny — je to váš plán. " +
-  "Zaplacené výdaje snižují zbývající částku. " +
-  "Výdaje ve stavu Plánováno / Objednáno u běžných položek rozpočet neodečítají, ale zobrazí se jako „rozepsáno, nerealizováno“. " +
-  "Výdaje v položce Ostatní se vždy odečítají ihned.";
+  "Každý zadaný výdaj se ihned započítá do skutečných nákladů a sníží zbývající částku " +
+  "(stav Zaplaceno není potřeba). " +
+  "Výdaje ve stavu Plánováno / Objednáno se stejně odečítají, ale zůstanou vidět jako připomínka k doplacení.";
 
 export const BUDGET_LABELS = {
   /** @deprecated použijte planned */
@@ -52,10 +52,10 @@ export const BUDGET_LABELS = {
   remainingFromLimit: "Zbývá z limitu stavby",
   overLimit: "Přes limit stavby",
   itemsVsSpent: "Rozdíl položek a nákladů",
-  pendingSection: "Rozepsáno — zatím nerealizováno",
-  pendingAmount: "Připravené výdaje",
+  pendingSection: "Zadáno — ještě nezaplaceno",
+  pendingAmount: "Čeká na zaplacení",
   pendingHint:
-    "Tyto částky se ještě neodečítají od rozpočtu. Až je označíte jako zaplacené, započítají se do skutečných nákladů.",
-  pendingBadge: "Nerealizováno",
-  pendingEmpty: "Žádné rozepsané výdaje čekající na realizaci.",
+    "Tyto výdaje už jsou započítané v nákladech a snižují zbývající rozpočet. Stav Zaplaceno slouží jen jako evidence platby.",
+  pendingBadge: "Nezaplaceno",
+  pendingEmpty: "Žádné nezaplacené výdaje.",
 } as const;

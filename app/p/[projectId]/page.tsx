@@ -67,13 +67,13 @@ export default async function DashboardPage({
                 href={`/p/${projectId}/rozpocet/vydaje?paymentStatus=pending`}
                 className="hover:underline"
               >
-                Rozepsáno / nerealizováno
+                Zadáno — ještě nezaplaceno
               </Link>
             </p>
             <p className="text-xl font-semibold">{data.unpaidCount}</p>
             {data.unpaidCount > 0 && (
               <p className="mt-1 text-sm text-amber-800">
-                {formatCzk(data.pendingAmount)} — zatím se neodečítá
+                {formatCzk(data.pendingAmount)} — už v nákladech
               </p>
             )}
           </CardContent>
